@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useInfection } from '../contexts/InfectionContext';
 import { usePuzzle } from '../contexts/PuzzleContext';
+import { playBackgroundMusic } from '../utils/soundManager';
 import { PUZZLE_TO_MODULE, shouldModuleBeUnlocked } from '../utils/unlockSystem';
 import InfectionProgressBar from './infection/InfectionProgressBar';
 import AppIconWithHalo from './ui/AppIconWithHalo';
@@ -133,7 +134,13 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
       // Update unlocked modules without sending notifications
       setUnlockedModules(newUnlockedModules);
     }
-  }, [unlockedModules]); // Fixed dependency array
+  }, [getCompletedPuzzles]); // Changed dependency to getCompletedPuzzles instead of unlockedModules
+
+  // Start main menu theme when component mounts
+  useEffect(() => {
+    // Play the main menu theme
+    playBackgroundMusic('cyberpunk_bass_1', require('../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
+  }, []);
 
   const handleAppPress = (moduleName: string) => {
     onOpenModule(moduleName);

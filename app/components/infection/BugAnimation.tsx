@@ -55,6 +55,9 @@ export default function BugAnimation({ onComplete }: BugAnimationProps) {
     // Play alarm sound immediately
     playSound('ui_alert');
     
+    // Play death sound for system compromise
+    playSound('puzzle_fail');
+    
     // Start flashing lights
     const flashSequence = Animated.loop(
       Animated.sequence([
