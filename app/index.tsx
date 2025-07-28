@@ -3,9 +3,7 @@ import { View } from 'react-native';
 import HomeScreen from './components/home/HomeScreen';
 import DownloadScreen from './components/login/DownloadScreen';
 import LoginScreen from './components/login/LoginScreen';
-import AboutScreen from './components/Modules/about/AboutScreen';
-import CoreVitalsScreen from './components/Modules/about/CoreVitalsScreen';
-import SystemModule from './components/Modules/about/System/SystemModule';
+import SystemModule from './components/modules/about/System/SystemModule';
 import { useAuth } from './contexts/AuthContext';
 import { InfectionProvider } from './contexts/InfectionContext';
 import { PuzzleProvider } from './contexts/PuzzleContext';
@@ -95,22 +93,6 @@ function AppContent() {
           onGoToCoreVitals={() => navigate('core-vitals')}
           onSelfDestruct={() => navigate('self-destruct')}
         />         
-      </View>
-    );
-  }
-
-  if (gameState === 'about') {
-    return (
-      <View className="flex-1">
-        <AboutScreen onGoBack={() => navigate('system')} />
-      </View>
-    );
-  }
-
-  if (gameState === 'core-vitals') {
-    return (
-      <View className="flex-1">
-        <CoreVitalsScreen onGoBack={() => navigate('system')} />
       </View>
     );
   }

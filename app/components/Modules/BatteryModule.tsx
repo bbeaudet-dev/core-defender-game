@@ -1,9 +1,9 @@
 import * as Battery from 'expo-battery';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
-import ScreenTemplate from '../../ui/ScreenTemplate';
+import { usePuzzle } from '../../contexts/PuzzleContext';
+import { getModuleBackgroundImage } from '../../data/modules';
+import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface BatteryModuleProps {
   onGoHome: () => void;

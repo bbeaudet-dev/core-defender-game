@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { playSound } from '../../../utils/soundManager';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
-import ScreenTemplate from '../../ui/ScreenTemplate';
+import { usePuzzle } from '../../contexts/PuzzleContext';
+import { getModuleBackgroundImage } from '../../data/modules';
+import { playSound } from '../../utils/soundManager';
+import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface WeatherData {
   temperature: number;

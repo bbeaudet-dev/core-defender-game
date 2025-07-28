@@ -1,6 +1,6 @@
 import { ScrollView } from 'react-native';
 import { usePuzzle } from '../../../../contexts/PuzzleContext';
-import { getModuleBackgroundImage } from '../../../../utils/unlockSystem';
+import { getModuleBackgroundImage } from '../../../../data/modules';
 import ScreenTemplate from '../../../ui/ScreenTemplate';
 import DangerZoneSection from './DangerZoneSection';
 import DeviceSection from './DeviceSection';

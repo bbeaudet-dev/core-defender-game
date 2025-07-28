@@ -446,4 +446,3 @@ This document outlines the comprehensive cleanup and improvements needed to make
 ## More to add
 
 - Fix live data plots
-- Difference between onGoHome and onGoBack? 

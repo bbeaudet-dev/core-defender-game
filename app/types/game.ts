@@ -10,10 +10,17 @@ export interface GameState {
   guestUsername: string;
 }
 
-// Game module interfaces
-export interface GamesModuleProps {
+// Standardized navigation props
+export interface NavigationProps {
   onGoHome: () => void;
 }
+
+export interface BackNavigationProps {
+  onGoBack: () => void;
+}
+
+// Game module interfaces - all main modules use onGoHome
+export interface GamesModuleProps extends NavigationProps {}
 
 export interface MemoryGameProps {
   onComplete: () => void;
@@ -30,173 +37,38 @@ export interface ReactionTestProps {
   onGoBack: () => void;
 }
 
-export interface FinalBossModuleProps {
-  onGoHome: () => void;
-}
+export interface FinalBossModuleProps extends NavigationProps {}
 
-// Terminal module
-export interface TerminalModuleProps {
-  onGoHome: () => void;
-}
+export interface TerminalModuleProps extends NavigationProps {}
 
-// Clock module
-export interface ClockModuleProps {
-  onGoHome: () => void;
-}
+export interface ClockModuleProps extends NavigationProps {}
 
-// Calculator module
-export interface CalculatorModuleProps {
-  onGoHome: () => void;
-}
+export interface CalculatorModuleProps extends NavigationProps {}
 
-// Weather module
-export interface WeatherModuleProps {
-  onGoHome: () => void;
-}
+export interface WeatherModuleProps extends NavigationProps {}
 
-// Battery module
-export interface BatteryModuleProps {
-  onGoHome: () => void;
-}
+export interface BatteryModuleProps extends NavigationProps {}
 
-// Flashlight module
-export interface FlashlightModuleProps {
-  onGoHome: () => void;
-}
+export interface FlashlightModuleProps extends NavigationProps {}
 
-// Camera module
-export interface PhoneCameraModuleProps {
-  onGoHome: () => void;
-}
+export interface PhoneCameraModuleProps extends NavigationProps {}
 
-export interface CameraStatusProps {
-  onGoBack: () => void;
-}
+export interface CameraStatusProps extends BackNavigationProps {}
 
-export interface CameraPlaceholderProps {
-  onGoBack: () => void;
-}
+export interface CameraPlaceholderProps extends BackNavigationProps {}
 
-// Compass module
-export interface CompassModuleProps {
-  onGoHome: () => void;
-}
+export interface CompassModuleProps extends NavigationProps {}
 
-export interface CompassDisplayProps {
-  heading: number;
-}
+export interface AccelerometerModuleProps extends NavigationProps {}
 
-export interface CompassDataProps {
-  heading: number;
-}
+export interface GyroModuleProps extends NavigationProps {}
 
-export interface CompassErrorProps {
-  onGoBack: () => void;
-}
+export interface MicrophoneModuleProps extends NavigationProps {}
 
-export interface CompassUnavailableProps {
-  onGoBack: () => void;
-}
+export interface MusicModuleProps extends NavigationProps {}
 
-// Accelerometer module
-export interface AccelerometerModuleProps {
-  onGoHome: () => void;
-}
+export interface MapsModuleProps extends NavigationProps {}
 
-export interface AccelerometerDataProps {
-  x: number;
-  y: number;
-  z: number;
-}
+export interface WifiModuleProps extends NavigationProps {}
 
-export interface AccelerometerControlsProps {
-  onStart: () => void;
-  onStop: () => void;
-  isActive: boolean;
-}
-
-export interface AccelerometerUnavailableProps {
-  onGoBack: () => void;
-}
-
-// Gyro module
-export interface GyroModuleProps {
-  onGoHome: () => void;
-}
-
-export interface GyroControlsProps {
-  onStart: () => void;
-  onStop: () => void;
-  isActive: boolean;
-}
-
-export interface SpeedDisplayProps {
-  speed: number;
-}
-
-// Microphone module
-export interface MicrophoneModuleProps {
-  onGoHome: () => void;
-}
-
-export interface AudioLevelIndicatorProps {
-  level: number;
-}
-
-export interface AudioWaveformProps {
-  data: number[];
-}
-
-// Music module
-export interface MusicModuleProps {
-  onGoHome: () => void;
-}
-
-export interface MusicTracksProps {
-  onTrackSelect: (track: string) => void;
-  selectedTrack?: string;
-}
-
-export interface AudioControlsProps {
-  onPlay: () => void;
-  onPause: () => void;
-  onStop: () => void;
-  isPlaying: boolean;
-  volume: number;
-  onVolumeChange: (volume: number) => void;
-}
-
-// Maps module
-export interface MapsModuleProps {
-  onGoHome: () => void;
-}
-
-// Wifi module
-export interface WifiModuleProps {
-  onGoHome: () => void;
-}
-
-export interface ConnectionStatusProps {
-  isConnected: boolean;
-  networkName?: string;
-}
-
-export interface NetworkListProps {
-  networks: Array<{
-    ssid: string;
-    strength: number;
-    security: string;
-  }>;
-  onNetworkSelect: (ssid: string) => void;
-}
-
-export interface NetworkStatsProps {
-  downloadSpeed: number;
-  uploadSpeed: number;
-  latency: number;
-}
-
-// Tutorial module
-export interface TutorialModuleProps {
-  onGoHome: () => void;
-} 
+export interface TutorialModuleProps extends NavigationProps {} 

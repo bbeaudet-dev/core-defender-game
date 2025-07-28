@@ -7,11 +7,11 @@ import * as Network from 'expo-network';
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Text, TouchableOpacity, View } from 'react-native';
-import { useInfection } from '../../../contexts/InfectionContext';
-import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { playSound } from '../../../utils/soundManager';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
-import ScreenTemplate from '../../ui/ScreenTemplate';
+import { useInfection } from '../../contexts/InfectionContext';
+import { usePuzzle } from '../../contexts/PuzzleContext';
+import { getModuleBackgroundImage } from '../../data/modules';
+import { playSound } from '../../utils/soundManager';
+import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface FinalBossModuleProps {
   onGoHome: () => void;

@@ -1,14 +1,12 @@
 import { Gyroscope } from 'expo-sensors';
 import { useEffect, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
-import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { playSound } from '../../../utils/soundManager';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import { usePuzzle } from '../../contexts/PuzzleContext';
+import { getModuleBackgroundImage } from '../../data/modules';
+import { playSound } from '../../utils/soundManager';
 
-import GyroPlot from '../../ui/LiveDataPlot';
-import ScreenTemplate from '../../ui/ScreenTemplate';
-import GyroControls from './GyroControls';
-import SpeedDisplay from './SpeedDisplay';
+import GyroPlot from '../ui/LiveDataPlot';
+import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface GyroModuleProps {
   onGoHome: () => void;
@@ -144,7 +142,21 @@ export default function GyroModule({ onGoHome }: GyroModuleProps) {
           <>
             <View className="space-y-4">
               {/* Angular Velocity Display Components */}
-              <SpeedDisplay currentSpeed={currentAngularVelocity} maxSpeed={maxAngularVelocity} />
+              {/* Current Angular Velocity */}
+              <View className="bg-gray-900 p-4 rounded-lg my-1">
+                <Text className="text-gray-400 text-sm font-mono mb-2">CURRENT ANGULAR VELOCITY</Text>
+                <Text className="text-green-400 text-3xl font-mono">
+                  {currentAngularVelocity.toFixed(1)}°/s
+                </Text>
+              </View>
+
+              {/* Max Angular Velocity */}
+              <View className="bg-gray-900 p-4 rounded-lg my-1">
+                <Text className="text-gray-400 text-sm font-mono mb-2">MAX. ANGULAR VELOCITY</Text>
+                <Text className="text-blue-400 text-3xl font-mono">
+                  {maxAngularVelocity.toFixed(1)}°/s
+                </Text>
+              </View>
 
              
         
@@ -168,11 +180,23 @@ export default function GyroModule({ onGoHome }: GyroModuleProps) {
               </View>
 
               {/* Controls Component */}
-              <GyroControls 
-                subscription={subscription}
-                onToggleGyroscope={toggleGyroscope}
-                onResetMaxSpeed={resetMaxAngularVelocity}
-              />
+              <View className="space-y-3 flex flex-row justify-between">
+                <TouchableOpacity
+                  onPress={toggleGyroscope}
+                  className={`p-3 rounded-lg flex-1 mr-2 ${subscription ? 'bg-red-600' : 'bg-green-600'}`}
+                >
+                  <Text className="text-white text-center font-mono">
+                    {subscription ? 'STOP' : 'START'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={resetMaxAngularVelocity}
+                  className="bg-gray-700 p-3 rounded-lg flex-1 ml-2"
+                >
+                  <Text className="text-white text-center font-mono">RESET MAX</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </>
         )}

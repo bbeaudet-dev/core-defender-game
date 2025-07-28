@@ -1,14 +1,11 @@
 import { playSound } from '@/app/utils/soundManager';
 import { Accelerometer } from 'expo-sensors';
 import { useEffect, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, Text, View, TouchableOpacity } from 'react-native';
 import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
+import { getModuleBackgroundImage } from '../../../data/modules';
 import AccelerometerPlot from '../../ui/LiveDataPlot';
 import ScreenTemplate from '../../ui/ScreenTemplate';
-import AccelerometerControls from './AccelerometerControls';
-import AccelerometerData from './AccelerometerData';
-import AccelerometerUnavailable from './AccelerometerUnavailable';
 
 interface AccelerometerModuleProps {
   onGoHome: () => void;
@@ -239,7 +236,23 @@ export default function AccelerometerModule({ onGoHome }: AccelerometerModulePro
   };
 
   if (!isAvailable) {
-    return <AccelerometerUnavailable error={error} onGoHome={onGoHome} />;
+    return (
+      <ScreenTemplate 
+        title="ACCELEROMETER" 
+        titleColor="purple" 
+        onGoHome={onGoHome}
+        backgroundImage={backgroundImage}
+      >
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-red-400 text-center font-mono mb-4">
+            {error || 'Accelerometer not available'}
+          </Text>
+          <Text className="text-gray-400 text-center font-mono text-sm">
+            Try on a physical device
+          </Text>
+        </View>
+      </ScreenTemplate>
+    );
   }
 
   return (
@@ -249,23 +262,83 @@ export default function AccelerometerModule({ onGoHome }: AccelerometerModulePro
       onGoHome={onGoHome}
       backgroundImage={backgroundImage}
     >
-          <AccelerometerData
-            currentAcceleration={convertToUnit(currentAcceleration, unitType)}
-            maxAcceleration={convertToUnit(maxAcceleration, unitType)}
-            movementEquivalent={movementEquivalent}
-            highestMovementEquivalent={highestMovementEquivalent}
-            accelerometerData={accelerometerData}
-            unitType={unitType}
-            expectedGravity={getExpectedGravity(unitType)}
-          />
+          {/* AccelerometerData content */}
+          <View className="space-y-4">
+            {/* Current Acceleration */}
+            <View className="bg-gray-900 p-4 rounded-lg">
+              <Text className="text-gray-400 text-sm font-mono mb-2">CURRENT ACCELERATION</Text>
+              <Text className="text-purple-400 text-3xl font-mono">
+                {convertToUnit(currentAcceleration, unitType).toFixed(2)}{getUnitLabel(unitType)}
+              </Text>
+              <Text className="text-gray-500 text-xs font-mono mt-1">
+                {(convertToUnit(currentAcceleration, unitType) / getExpectedGravity(unitType)).toFixed(2)}g (expected: 1.00g)
+              </Text>
+            </View>
 
-          <AccelerometerControls
-            subscription={subscription}
-            onToggleAccelerometer={toggleAccelerometer}
-            onResetMaxAcceleration={resetMaxAcceleration}
-            unitType={getUnitLabel(unitType)}
-            onToggleUnit={toggleUnit}
-          />
+            {/* Max Acceleration */}
+            <View className="bg-gray-900 p-4 rounded-lg">
+              <Text className="text-gray-400 text-sm font-mono mb-2">MAX ACCELERATION</Text>
+              <Text className="text-blue-400 text-3xl font-mono">
+                {convertToUnit(maxAcceleration, unitType).toFixed(2)}{getUnitLabel(unitType)}
+              </Text>
+              <Text className="text-gray-500 text-xs font-mono mt-1">
+                ({highestMovementEquivalent})
+              </Text>
+            </View>
+
+            {/* Movement Equivalent */}
+            <View className="bg-gray-900 p-4 rounded-lg">
+              <Text className="text-gray-400 text-sm font-mono mb-2">MOVEMENT EQUIVALENT</Text>
+              <Text className="text-green-400 text-2xl font-mono">
+                {movementEquivalent}
+              </Text>
+            </View>
+
+            {/* Raw Data */}
+            <View className="flex flex-row bg-gray-900 p-4 rounded-lg justify-between">
+              <Text className="text-gray-400 text-sm font-mono mb-2">RAW DATA</Text>
+              <Text className="text-gray-300 text-sm font-mono">X: {accelerometerData.x.toFixed(3)}</Text>
+              <Text className="text-gray-300 text-sm font-mono">Y: {accelerometerData.y.toFixed(3)}</Text>
+              <Text className="text-gray-300 text-sm font-mono">Z: {accelerometerData.z.toFixed(3)}</Text>
+            </View>
+          </View>
+
+          {/* AccelerometerControls content */}
+          <View className="space-y-3">
+            <View className="flex flex-row justify-between space-x-2">
+              <TouchableOpacity
+                onPress={() => {
+                  playSound('ui_button_tap');
+                  toggleAccelerometer();
+                }}
+                className={`p-3 rounded-lg flex-1 ${subscription ? 'bg-red-600' : 'bg-green-600'}`}
+              >
+                <Text className="text-white text-center font-mono">
+                  {subscription ? 'STOP' : 'START'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  playSound('ui_button_tap');
+                  resetMaxAcceleration();
+                }}
+                className="bg-gray-700 p-3 rounded-lg flex-1"
+              >
+                <Text className="text-white text-center font-mono">RESET</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  playSound('ui_button_tap');
+                  toggleUnit();
+                }}
+                className="bg-purple-600 p-3 rounded-lg flex-1"
+              >
+                <Text className="text-white text-center font-mono">{getUnitLabel(unitType)}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
           {/* Speed Plot */}
           <View className="bg-gray-900 p-4 rounded-lg mt-4">

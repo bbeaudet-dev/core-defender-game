@@ -20,28 +20,9 @@ export interface PuzzleState {
   };
 }
 
-export const PUZZLE_TYPES = {
-  SYSTEM_SECURITY: 'system_security',
-  TERMINAL_ACCESS: 'terminal_access',
-  HELP_TUTORIAL: 'help_tutorial',
-  BATTERY_CHARGE: 'battery_charge',
-  FLASHLIGHT_MORSE: 'flashlight_morse',
-  LOCATION_NAVIGATE: 'location_navigate',
-  ACCELEROMETER_MOVEMENT: 'accelerometer_movement',
-  GYROSCOPE_ROTATION: 'gyroscope_rotation',
-  MICROPHONE_LEVEL: 'microphone_level',
-  COMPASS_ORIENTATION: 'compass_orientation',
-  COMPASS_DIRECTION_HOLD: 'compass_direction_hold',
-  CALCULATOR_PUZZLE: 'calculator_puzzle',
-  MUSIC_PLAY: 'music_play',
-  CAMERA_CAPTURE: 'camera_capture',
-} as const;
-
-export type PuzzleType = typeof PUZZLE_TYPES[keyof typeof PUZZLE_TYPES];
-
 export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
-  [PUZZLE_TYPES.SYSTEM_SECURITY]: {
-    id: PUZZLE_TYPES.SYSTEM_SECURITY,
+  'system_security': {
+    id: 'system_security',
     name: 'System Security',
     description: 'Bypass system security protocols',
     moduleId: 'system',
@@ -49,8 +30,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'red',
   },
-  [PUZZLE_TYPES.TERMINAL_ACCESS]: {
-    id: PUZZLE_TYPES.TERMINAL_ACCESS,
+  'terminal_access': {
+    id: 'terminal_access',
     name: 'Terminal Access',
     description: 'Gain terminal access by solving access codes',
     moduleId: 'terminal',
@@ -58,8 +39,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'green',
   },
-  [PUZZLE_TYPES.HELP_TUTORIAL]: {
-    id: PUZZLE_TYPES.HELP_TUTORIAL,
+  'help_tutorial': {
+    id: 'help_tutorial',
     name: 'Tutorial',
     description: 'Complete the tutorial to unlock system knowledge',
     moduleId: 'tutorial',
@@ -67,8 +48,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'blue',
   },
-  [PUZZLE_TYPES.BATTERY_CHARGE]: {
-    id: PUZZLE_TYPES.BATTERY_CHARGE,
+  'battery_charge': {
+    id: 'battery_charge',
     name: 'Power Restoration',
     description: 'Charge the device above 80% to restore power systems',
     moduleId: 'battery',
@@ -76,8 +57,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'green',
   },
-  [PUZZLE_TYPES.FLASHLIGHT_MORSE]: {
-    id: PUZZLE_TYPES.FLASHLIGHT_MORSE,
+  'flashlight_morse': {
+    id: 'flashlight_morse',
     name: 'Signal Transmission',
     description: 'Transmit SOS in morse code using the flashlight',
     moduleId: 'flashlight',
@@ -85,9 +66,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'yellow',
   },
-
-  [PUZZLE_TYPES.LOCATION_NAVIGATE]: {
-    id: PUZZLE_TYPES.LOCATION_NAVIGATE,
+  'location_navigate': {
+    id: 'location_navigate',
     name: 'Navigation System',
     description: 'Navigate to specified coordinates to restore GPS',
     moduleId: 'maps',
@@ -95,8 +75,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'purple',
   },
-  [PUZZLE_TYPES.ACCELEROMETER_MOVEMENT]: {
-    id: PUZZLE_TYPES.ACCELEROMETER_MOVEMENT,
+  'accelerometer_movement': {
+    id: 'accelerometer_movement',
     name: 'Motion Detection',
     description: 'Move the device to test accelerometer sensors',
     moduleId: 'accelerometer',
@@ -104,8 +84,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'red',
   },
-  [PUZZLE_TYPES.GYROSCOPE_ROTATION]: {
-    id: PUZZLE_TYPES.GYROSCOPE_ROTATION,
+  'gyroscope_rotation': {
+    id: 'gyroscope_rotation',
     name: 'Rotation Calibration',
     description: 'Rotate the device to calibrate gyroscope',
     moduleId: 'gyro',
@@ -113,8 +93,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'orange',
   },
-  [PUZZLE_TYPES.MICROPHONE_LEVEL]: {
-    id: PUZZLE_TYPES.MICROPHONE_LEVEL,
+  'microphone_level': {
+    id: 'microphone_level',
     name: 'Audio System Test',
     description: 'Test microphone by reaching target audio level',
     moduleId: 'microphone',
@@ -122,8 +102,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'pink',
   },
-  [PUZZLE_TYPES.COMPASS_ORIENTATION]: {
-    id: PUZZLE_TYPES.COMPASS_ORIENTATION,
+  'compass_orientation': {
+    id: 'compass_orientation',
     name: 'Directional Calibration',
     description: 'Point the device north to calibrate compass',
     moduleId: 'compass',
@@ -131,8 +111,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'cyan',
   },
-  [PUZZLE_TYPES.COMPASS_DIRECTION_HOLD]: {
-    id: PUZZLE_TYPES.COMPASS_DIRECTION_HOLD,
+  'compass_direction_hold': {
+    id: 'compass_direction_hold',
     name: 'Direction Hold',
     description: 'Hold the device facing a specific direction for 5 seconds',
     moduleId: 'compass',
@@ -140,8 +120,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'blue',
   },
-  [PUZZLE_TYPES.CALCULATOR_PUZZLE]: {
-    id: PUZZLE_TYPES.CALCULATOR_PUZZLE,
+  'calculator_puzzle': {
+    id: 'calculator_puzzle',
     name: 'Mathematical Verification',
     description: 'Solve the calculation and input the result in terminal',
     moduleId: 'calculator',
@@ -149,8 +129,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'orange',
   },
-  [PUZZLE_TYPES.MUSIC_PLAY]: {
-    id: PUZZLE_TYPES.MUSIC_PLAY,
+  'music_play': {
+    id: 'music_play',
     name: 'Audio Playback Test',
     description: 'Play a music track to test audio systems',
     moduleId: 'music',
@@ -158,8 +138,8 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'purple',
   },
-  [PUZZLE_TYPES.CAMERA_CAPTURE]: {
-    id: PUZZLE_TYPES.CAMERA_CAPTURE,
+  'camera_capture': {
+    id: 'camera_capture',
     name: 'Visual Recording Test',
     description: 'Take a photo to test camera functionality',
     moduleId: 'camera',
@@ -167,9 +147,4 @@ export const DEFAULT_PUZZLES: Record<string, PuzzleConfig> = {
     isComplete: false,
     color: 'purple',
   },
-};
-
-// Add default export
-export default {
-  DEFAULT_PUZZLES
 }; 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
 import { playSound } from '../../utils/soundManager';
 import AnimatedBackground from '../ui/AnimatedBackground';
 
@@ -10,11 +11,22 @@ interface WelcomeGameScreenProps {
 }
 
 export default function WelcomeGameScreen({ type, guestUsername, onDownload }: WelcomeGameScreenProps) {
+  const { user } = useAuth();
   const buttonRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const textPulseAnim = useRef(new Animated.Value(1)).current;
   const [isAlarmActive, setIsAlarmActive] = useState(false);
   const flashAnim = useRef(new Animated.Value(0)).current;
+
+  // Get the appropriate username based on login type
+  const getUsername = () => {
+    if (type === 'guest') {
+      return guestUsername;
+    } else {
+      return user?.name || 'User';
+    }
+  };
+
   // Pulsing animation for the button
   useEffect(() => {
     const pulse = Animated.loop(
@@ -116,13 +128,14 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
   };
 
   const getMessage = () => {
+    const username = getUsername();
     switch (type) {
       case 'signup':
-        return `Welcome to the system, ${guestUsername}. Access granted to all modules.`;
+        return `Welcome to the system, ${username}. Access granted to all modules.`;
       case 'signin':
-        return `Welcome back, ${guestUsername}.`;
+        return `Welcome back, ${username}.`;
       case 'guest':
-        return `Welcome, ${guestUsername}. Access granted to all modules.`;
+        return `Welcome, ${username}. Access granted to all modules.`;
       default:
         return 'Operation completed successfully.';
     }

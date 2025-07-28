@@ -1,7 +1,5 @@
 // Module-related types
 
-export type ModuleName = 'terminal' | 'system' | 'clock' | 'gyro' | 'compass' | 'microphone' | 'camera' | 'accelerometer' | 'wifi' | 'tutorial' | 'music' | 'flashlight' | 'battery' | 'maps' | 'calculator' | 'weather' | 'games' | 'finalboss';
-
 export type AppStatus = 'completed' | 'in-progress' | 'locked' | 'default';
 
 export interface AppModule {
@@ -13,21 +11,18 @@ export interface AppModule {
   status: AppStatus;
 }
 
-// Module Props interfaces
-export interface ModuleProps {
-  onGoHome: () => void;
-}
+// Import navigation props from game types to avoid duplication
+import { BackNavigationProps, NavigationProps } from './game';
 
-export interface SystemModuleProps extends ModuleProps {
+// Module Props interfaces
+export interface ModuleProps extends NavigationProps {}
+
+export interface SystemModuleProps extends NavigationProps {
   onGoToAbout: () => void;
   onGoToCoreVitals: () => void;
   onSelfDestruct: () => void;
 }
 
-export interface AboutScreenProps {
-  onGoBack: () => void;
-}
+export interface AboutScreenProps extends BackNavigationProps {}
 
-export interface CoreVitalsScreenProps {
-  onGoBack: () => void;
-} 
+export interface CoreVitalsScreenProps extends BackNavigationProps {} 

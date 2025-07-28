@@ -1,12 +1,12 @@
 import {
-  AudioRecorder,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync
+    AudioRecorder,
+    requestRecordingPermissionsAsync,
+    setAudioModeAsync
 } from 'expo-audio';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
+import { getModuleBackgroundImage } from '../../../data/modules';
 import ScreenTemplate from '../../ui/ScreenTemplate';
 import AudioLevelIndicator from './AudioLevelIndicator';
 import AudioWaveform from './AudioWaveform';

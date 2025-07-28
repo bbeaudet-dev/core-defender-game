@@ -1,8 +1,6 @@
-import { ModuleName } from '../types/modules';
-
 // Comprehensive module interface
 export interface ModuleData {
-  name: ModuleName;
+  name: string;
   displayName: string;
   icon: string;
   color: string;
@@ -256,6 +254,9 @@ export const ALL_MODULES: ModuleData[] = [
   }
 ];
 
+// Derive ModuleName type from ALL_MODULES
+export type ModuleName = typeof ALL_MODULES[number]['name'];
+
 // Helper functions
 export function getModuleByName(name: ModuleName): ModuleData | undefined {
   return ALL_MODULES.find(module => module.name === name);
@@ -351,4 +352,37 @@ export function getModuleNameForPuzzle(puzzleId: string): ModuleName | undefined
 export function isModulePuzzleCompleted(moduleName: ModuleName, completedPuzzles: string[]): boolean {
   const puzzleId = getPuzzleIdForModule(moduleName);
   return puzzleId ? completedPuzzles.includes(puzzleId) : false;
+} 
+
+// Helper function for background image selection
+export function getModuleBackgroundImage(
+  moduleName: string, 
+  completedPuzzles: string[], 
+  isFirstVisit: boolean = false
+): any {
+  const module = getModuleByName(moduleName as ModuleName);
+  if (!module) {
+    // Default to green if module not found
+    return require('../../assets/images/glowing-green-neon-with-stars-29-09-2024-1727679307-hd-wallpaper.jpg');
+  }
+
+  // Check if this module's puzzle is completed
+  const isPuzzleCompleted = module.puzzleId && completedPuzzles.includes(module.puzzleId);
+  
+  // Check if all puzzles are completed (disinfected state)
+  const allModules = ALL_MODULES.filter(m => m.puzzleId);
+  const allPuzzlesCompleted = allModules.every(m => 
+    m.puzzleId && completedPuzzles.includes(m.puzzleId)
+  );
+
+  if (allPuzzlesCompleted) {
+    // Green background - completely disinfected
+    return require('../../assets/images/glowing-green-neon-with-stars-29-09-2024-1727679307-hd-wallpaper.jpg');
+  } else if (isPuzzleCompleted) {
+    // Blue background - puzzle solved
+    return require('../../assets/images/blue frame.png');
+  } else {
+    // Red background - corrupted/unsolved
+    return require('../../assets/images/red_corruption.jpg');
+  }
 } 

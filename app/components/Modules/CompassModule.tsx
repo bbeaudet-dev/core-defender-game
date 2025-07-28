@@ -1,15 +1,12 @@
 import { Magnetometer } from 'expo-sensors';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
-import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
+import { Platform, Text, View } from 'react-native';
+import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
+import { usePuzzle } from '../../contexts/PuzzleContext';
+import { getModuleBackgroundImage } from '../../data/modules';
 
 import { playSound } from '@/app/utils/soundManager';
-import ScreenTemplate from '../../ui/ScreenTemplate';
-import CompassData from './CompassData';
-import CompassDisplay from './CompassDisplay';
-import CompassError from './CompassError';
-import CompassUnavailable from './CompassUnavailable';
+import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface CompassModuleProps {
   onGoHome: () => void;
@@ -187,11 +184,35 @@ export default function CompassModule({ onGoHome }: CompassModuleProps) {
   const direction = heading !== null ? getDirection(heading) : 'N';
 
   if (error) {
-    return <CompassError error={error} onGoHome={onGoHome} />;
+    return (
+      <ScreenTemplate 
+        title="COMPASS" 
+        titleColor="blue" 
+        onGoHome={onGoHome}
+        backgroundImage={backgroundImage}
+      >
+        <View className="flex-1 justify-center items-center p-5">
+          <Text className="text-red-500 text-lg text-center mb-4">Error: {error}</Text>
+          <Text className="text-gray-400 text-sm text-center">Try on a mobile device or enable device orientation</Text>
+        </View>
+      </ScreenTemplate>
+    );
   }
 
   if (!isAvailable) {
-    return <CompassUnavailable onGoHome={onGoHome} />;
+    return (
+      <ScreenTemplate 
+        title="COMPASS" 
+        titleColor="blue" 
+        onGoHome={onGoHome}
+        backgroundImage={backgroundImage}
+      >
+        <View className="flex-1 justify-center items-center p-5">
+          <Text className="text-red-500 text-lg text-center mb-4">Magnetometer not available</Text>
+          <Text className="text-gray-400 text-sm text-center">This device doesn't support magnetometer sensors</Text>
+        </View>
+      </ScreenTemplate>
+    );
   }
 
   return (
@@ -202,12 +223,109 @@ export default function CompassModule({ onGoHome }: CompassModuleProps) {
       backgroundImage={backgroundImage}
     >
       <View className="flex-col w-full items-center justify-center">
-        <CompassDisplay heading={heading ?? 0} />
-        <CompassData 
-          direction={direction}
-          heading={heading ?? 0}
-          magnetometerData={magnetometerData}
-        />
+        {/* CompassDisplay content */}
+        <View className="items-center justify-center" style={{ minHeight: 370 }}>
+          <Svg width={350} height={350}>
+            {/* Outer circle */}
+            <Circle
+              cx={175}
+              cy={175}
+              r={155}
+              stroke="#333"
+              strokeWidth="3"
+              fill="#18181b"
+            />
+            
+            {/* Inner circle */}
+            <Circle
+              cx={175}
+              cy={175}
+              r={145}
+              stroke="#444"
+              strokeWidth="1"
+              fill="#232323"
+            />
+            
+            {/* Cardinal direction markers */}
+            {[
+              { text: 'N', angle: 0 },
+              { text: 'NE', angle: 45 },
+              { text: 'E', angle: 90 },
+              { text: 'SE', angle: 135 },
+              { text: 'S', angle: 180 },
+              { text: 'SW', angle: 225 },
+              { text: 'W', angle: 270 },
+              { text: 'NW', angle: 315 }
+            ].map((dir, index) => {
+              const angle = (dir.angle - (heading ?? 0)) * Math.PI / 180;
+              const x1 = 175 + 140 * Math.sin(angle);
+              const y1 = 175 - 140 * Math.cos(angle);
+              const x2 = 175 + 155 * Math.sin(angle);
+              const y2 = 175 - 155 * Math.cos(angle);
+              const textX = 175 + 170 * Math.sin(angle);
+              const textY = 175 - 170 * Math.cos(angle);
+              
+              return (
+                <>
+                  <Line
+                    key={`line-${index}`}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke={dir.text === 'N' ? '#ef4444' : '#666'}
+                    strokeWidth={dir.text === 'N' ? '3' : '1'}
+                  />
+                  <SvgText
+                    key={`text-${index}`}
+                    x={textX}
+                    y={textY}
+                    fontSize="18"
+                    fontWeight="bold"
+                    fill={dir.text === 'N' ? '#ef4444' : '#bbb'}
+                    textAnchor="middle"
+                    alignmentBaseline="middle"
+                  >
+                    {dir.text}
+                  </SvgText>
+                </>
+              );
+            })}
+            
+            {/* Center dot */}
+            <Circle
+              cx={175}
+              cy={175}
+              r="6"
+              fill="#ef4444"
+            />
+            
+            {/* North needle */}
+            <Line
+              x1={175}
+              y1={175}
+              x2={175}
+              y2={20}
+              stroke="#ef4444"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+          </Svg>
+        </View>
+
+        {/* CompassData content */}
+        <View className="items-center">
+          <View className="items-center my-4">
+            <Text className="text-green-400 text-5xl font-bold font-mono mb-1">{direction}</Text>
+            <Text className="text-red-500 text-lg font-bold uppercase">DIRECTION</Text>
+          </View>
+          <View className="bg-gray-800 p-3 rounded-lg mb-2 items-center w-full max-w-xs">
+            <Text className="text-green-400 text-2xl font-mono mb-1">Heading: {(heading ?? 0).toFixed(1)}°</Text>
+            <Text className="text-green-400 text-base font-mono mb-1">X: {magnetometerData.x.toFixed(2)}</Text>
+            <Text className="text-green-400 text-base font-mono mb-1">Y: {magnetometerData.y.toFixed(2)}</Text>
+            <Text className="text-green-400 text-base font-mono mb-1">Z: {magnetometerData.z.toFixed(2)}</Text>
+          </View>
+        </View>
       </View>
     </ScreenTemplate>
   );
