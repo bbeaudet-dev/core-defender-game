@@ -5,7 +5,7 @@ import AnimatedBackground from '../ui/AnimatedBackground';
 
 interface WelcomeGameScreenProps {
   type: 'signup' | 'signin' | 'guest';
-  guestUsername?: string;
+  guestUsername: string;
   onDownload: () => void;
 }
 
@@ -120,7 +120,7 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
       case 'signup':
         return `Welcome to the system, ${guestUsername}. Access granted to all modules.`;
       case 'signin':
-        return `Authentication successful. Welcome back, ${guestUsername}.`;
+        return `Welcome back, ${guestUsername}.`;
       case 'guest':
         return `Welcome, ${guestUsername}. Access granted to all modules.`;
       default:

@@ -2,46 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useInfection } from '../../contexts/InfectionContext';
 import { usePuzzle } from '../../contexts/PuzzleContext';
+import { ALL_MODULES, isModulePuzzleCompleted, shouldModuleBeUnlocked } from '../../data/modules';
 import { HomeScreenProps } from '../../types/game';
-import { AppModule, AppStatus } from '../../types/modules';
+import { AppStatus } from '../../types/modules';
 import { playBackgroundMusic } from '../../utils/soundManager';
-import { PUZZLE_TO_MODULE, shouldModuleBeUnlocked } from '../../utils/unlockSystem';
 import AppIconWithHalo from '../ui/AppIconWithHalo';
 import ScreenTemplate from '../ui/ScreenTemplate';
 import InfectionProgressBar from './InfectionProgressBar';
-
-// Define all modules with their status
-const ALL_MODULES: AppModule[] = [
-  // Row 1: Tutorial, System, Battery
-  { name: 'tutorial', displayName: 'TUTORIAL', icon: '❓', color: 'bg-red-600', route: 'tutorial', status: 'default' },
-  { name: 'system', displayName: 'SYSTEM', icon: '⚙️', color: 'bg-red-600', route: 'system', status: 'locked' },
-  { name: 'battery', displayName: 'BATTERY', icon: '🔋', color: 'bg-green-600', route: 'battery', status: 'locked' },
-  
-  // Row 2: Terminal, Clock, Music
-  { name: 'terminal', displayName: 'TERMINAL', icon: '💻', color: 'bg-green-600', route: 'terminal', status: 'locked' },
-  { name: 'clock', displayName: 'CLOCK', icon: '⏰', color: 'bg-cyan-600', route: 'clock', status: 'locked' },
-  { name: 'music', displayName: 'MUSIC', icon: '🎵', color: 'bg-pink-600', route: 'music', status: 'locked' },
-  
-  // Row 3: Flashlight, Calculator, Compass
-  { name: 'flashlight', displayName: 'FLASHLIGHT', icon: '🔦', color: 'bg-yellow-600', route: 'flashlight', status: 'locked' },
-  { name: 'calculator', displayName: 'CALCULATOR', icon: '🧮', color: 'bg-orange-600', route: 'calculator', status: 'locked' },
-  { name: 'compass', displayName: 'COMPASS', icon: '🧭', color: 'bg-blue-600', route: 'compass', status: 'locked' },
-  
-  // Row 4: Gyro, Camera, Microphone
-  { name: 'gyro', displayName: 'GYRO', icon: '🔄', color: 'bg-green-600', route: 'gyro', status: 'locked' },
-  { name: 'camera', displayName: 'CAMERA', icon: '📷', color: 'bg-purple-600', route: 'camera', status: 'locked' },
-  { name: 'microphone', displayName: 'MICROPHONE', icon: '🎤', color: 'bg-green-600', route: 'microphone', status: 'locked' },
-  
-  // Row 5: Maps, Games, WiFi
-  { name: 'maps', displayName: 'MAPS', icon: '🗺️', color: 'bg-purple-600', route: 'maps', status: 'locked' },
-  { name: 'games', displayName: 'GAMES', icon: '🎮', color: 'bg-purple-600', route: 'games', status: 'locked' },
-  { name: 'wifi', displayName: 'WIFI', icon: '📡', color: 'bg-blue-600', route: 'wifi', status: 'locked' },
-  
-  // Row 6: Weather, Final Boss, Accelerometer
-  { name: 'weather', displayName: 'WEATHER', icon: '🌤️', color: 'bg-cyan-600', route: 'weather', status: 'locked' },
-  { name: 'finalboss', displayName: 'CORE', icon: '👁️‍🗨️', color: 'bg-red-600', route: 'finalboss', status: 'locked' },
-  { name: 'accelerometer', displayName: 'ACCELERATE', icon: '⏫', color: 'bg-purple-600', route: 'accelerometer', status: 'locked' },
-];
 
 
 
@@ -116,19 +83,13 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
     // Tutorial is always accessible and shows question mark when unsolved
     if (moduleName === 'tutorial') {
       const completedPuzzles = getCompletedPuzzles();
-      const puzzleId = Object.keys(PUZZLE_TO_MODULE).find(puzzle => 
-        PUZZLE_TO_MODULE[puzzle] === moduleName && completedPuzzles.includes(puzzle)
-      );
-      return puzzleId ? 'completed' : 'in-progress';
+      return isModulePuzzleCompleted(moduleName as any, completedPuzzles) ? 'completed' : 'in-progress';
     }
     
     if (unlockedModules.includes(moduleName)) {
       // Check if it has a completed puzzle
       const completedPuzzles = getCompletedPuzzles();
-      const puzzleId = Object.keys(PUZZLE_TO_MODULE).find(puzzle => 
-        PUZZLE_TO_MODULE[puzzle] === moduleName && completedPuzzles.includes(puzzle)
-      );
-      return puzzleId ? 'completed' : 'in-progress';
+      return isModulePuzzleCompleted(moduleName as any, completedPuzzles) ? 'completed' : 'in-progress';
     }
     return 'locked';
   };
@@ -138,10 +99,7 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   const getModuleBadge = (moduleName: string): string | number | undefined => {
     if (unlockedModules.includes(moduleName)) {
       const completedPuzzles = getCompletedPuzzles();
-      const puzzleId = Object.keys(PUZZLE_TO_MODULE).find(puzzle => 
-        PUZZLE_TO_MODULE[puzzle] === moduleName && completedPuzzles.includes(puzzle)
-      );
-      return puzzleId ? undefined : '!';
+      return isModulePuzzleCompleted(moduleName as any, completedPuzzles) ? undefined : '!';
     }
     return undefined;
   };

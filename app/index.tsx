@@ -6,49 +6,12 @@ import LoginScreen from './components/login/LoginScreen';
 import AboutScreen from './components/Modules/about/AboutScreen';
 import CoreVitalsScreen from './components/Modules/about/CoreVitalsScreen';
 import SystemModule from './components/Modules/about/System/SystemModule';
-import AccelerometerModule from './components/Modules/accelerometer/AccelerometerModule';
-import BatteryModule from './components/Modules/battery/BatteryModule';
-import CalculatorModule from './components/Modules/calculator/CalculatorModule';
-import PhoneCameraModule from './components/Modules/camera/PhoneCameraModule';
-import ClockModule from './components/Modules/clock/ClockModule';
-import CompassModule from './components/Modules/compass/CompassModule';
-import FinalBossModule from './components/Modules/finalboss/FinalBossModule';
-import FlashlightModule from './components/Modules/flashlight/FlashlightModule';
-import GamesModule from './components/Modules/games/GamesModule';
-import GyroModule from './components/Modules/gyro/GyroModule';
-import MapsModule from './components/Modules/maps/MapsModule';
-import MicrophoneModule from './components/Modules/microphone/MicrophoneModule';
-import MusicModule from './components/Modules/music/MusicModule';
-import TerminalModule from './components/Modules/terminal/TerminalModule';
-import TutorialModule from './components/Modules/tutorial/TutorialModule';
-import WeatherModule from './components/Modules/weather/WeatherModule';
-import WifiModule from './components/Modules/wifi/WifiModule';
 import { useAuth } from './contexts/AuthContext';
 import { InfectionProvider } from './contexts/InfectionContext';
 import { PuzzleProvider } from './contexts/PuzzleContext';
+import { MODULE_COMPONENTS } from './data/components';
 import { authApi } from './lib/auth';
 import { LoginType } from './types/auth';
-
-// Module mapping object - much cleaner than repetitive if statements
-const MODULE_COMPONENTS = {
-  terminal: TerminalModule,
-  clock: ClockModule,
-  gyro: GyroModule,
-  compass: CompassModule,
-  microphone: MicrophoneModule,
-  camera: PhoneCameraModule,
-  accelerometer: AccelerometerModule,
-  wifi: WifiModule,
-  tutorial: TutorialModule,
-  music: MusicModule,
-  flashlight: FlashlightModule,
-  battery: BatteryModule,
-  maps: MapsModule,
-  calculator: CalculatorModule,
-  weather: WeatherModule,
-  games: GamesModule,
-  finalboss: FinalBossModule,
-} as const;
 
 function AppContent() {
   const { isAuthenticated, user, guestSignIn } = useAuth();
