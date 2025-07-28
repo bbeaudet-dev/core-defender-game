@@ -70,8 +70,8 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   const completedPuzzles = getCompletedPuzzles();
   const isFinalBossDefeated = completedPuzzles.length >= 13; // Total puzzles
   const backgroundImage = isFinalBossDefeated 
-    ? require('../../assets/images/glowing-green-neon-with-stars-29-09-2024-1727679307-hd-wallpaper.jpg')
-    : require('../../assets/images/red frame.png');
+    ? require('../../../assets/images/glowing-green-neon-with-stars-29-09-2024-1727679307-hd-wallpaper.jpg')
+    : require('../../../assets/images/red frame.png');
 
   // Check for new unlocks when completed puzzles change
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   // Start main menu theme when component mounts
   useEffect(() => {
     // Play the main menu theme
-    playBackgroundMusic('cyberpunk_bass_1', require('../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
+    playBackgroundMusic('cyberpunk_bass_1', require('../../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
   }, []);
 
   const handleAppPress = (moduleName: string) => {
