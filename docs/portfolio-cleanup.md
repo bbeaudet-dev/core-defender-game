@@ -397,31 +397,30 @@ This document outlines the comprehensive cleanup and improvements needed to make
 
 ### High Priority (Critical Bugs)
 
-1. Guest access flow fix
-2. End game logic fix
-3. Infection progress bar fix
-4. Error message fixes
-5. Component cleanup and renaming
+### High Priority (Critical Bugs)
+- [X] Fix guest access flow
+- [ ] Fix end game logic
+- [ ] Fix infection progress bar
+- [ ] Fix error messages
+- [ ] Clean up and rename components
 
 ### Medium Priority (User Experience)
-
-6. Font standardization
-7. Header and layout improvements
-8. Calculator improvements
-9. Microphone layout
-10. System app restructure
-11. Data centralization and standardization
+- [ ] Standardize fonts
+- [ ] Improve headers and layouts
+- [ ] Improve calculator functionality
+- [ ] Fix microphone layout
+- [ ] Restructure system app
+- [ ] Centralize and standardize data
 
 ### Low Priority (Polish)
-
-12. Tutorial to About rename
-13. Sound effects cleanup
-14. Music module enhancement
-15. Terminal cleanup
-16. Bugged effects enhancement
-17. Boss battle rework
-18. Victory animation
-19. Codebase structure improvements
+- [ ] Rename Tutorial to About
+- [ ] Clean up sound effects
+- [ ] Enhance music module
+- [ ] Clean up terminal
+- [ ] Enhance bugged effects
+- [ ] Rework boss battle
+- [ ] Add victory animation
+- [ ] Improve codebase structure
 
 ## Testing Checklist
 
@@ -447,4 +446,4 @@ This document outlines the comprehensive cleanup and improvements needed to make
 ## More to add
 
 - Fix live data plots
-- 
+- Difference between onGoHome and onGoBack? 

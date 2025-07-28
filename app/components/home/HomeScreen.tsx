@@ -2,27 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useInfection } from '../../contexts/InfectionContext';
 import { usePuzzle } from '../../contexts/PuzzleContext';
+import { HomeScreenProps } from '../../types/game';
+import { AppModule, AppStatus } from '../../types/modules';
 import { playBackgroundMusic } from '../../utils/soundManager';
 import { PUZZLE_TO_MODULE, shouldModuleBeUnlocked } from '../../utils/unlockSystem';
 import AppIconWithHalo from '../ui/AppIconWithHalo';
 import ScreenTemplate from '../ui/ScreenTemplate';
 import InfectionProgressBar from './InfectionProgressBar';
-
-// Define app status types
-type AppStatus = 'completed' | 'in-progress' | 'locked' | 'default';
-
-interface AppModule {
-  name: string;
-  displayName: string;
-  icon: string;
-  color: string;
-  route: string;
-  status: AppStatus;
-}
-
-interface HomeScreenProps {
-  onOpenModule: (moduleName: string) => void;
-}
 
 // Define all modules with their status
 const ALL_MODULES: AppModule[] = [

@@ -27,9 +27,7 @@ import { useAuth } from './contexts/AuthContext';
 import { InfectionProvider } from './contexts/InfectionContext';
 import { PuzzleProvider } from './contexts/PuzzleContext';
 import { authApi } from './lib/auth';
-
-// Define module names type
-type ModuleName = 'terminal' | 'system' | 'clock' | 'gyro' | 'compass' | 'microphone' | 'camera' | 'accelerometer' | 'wifi' | 'tutorial' | 'music' | 'flashlight' | 'battery' | 'maps' | 'calculator' | 'weather' | 'games' | 'finalboss';
+import { LoginType } from './types/auth';
 
 // Module mapping object - much cleaner than repetitive if statements
 const MODULE_COMPONENTS = {
@@ -55,7 +53,7 @@ const MODULE_COMPONENTS = {
 function AppContent() {
   const { isAuthenticated, user, guestSignIn } = useAuth();
   const [gameState, setGameState] = useState('welcome');
-  const [loginType, setLoginType] = useState<'signup' | 'signin' | 'guest'>('signin');
+  const [loginType, setLoginType] = useState<LoginType>('signin');
   const [guestUsername, setGuestUsername] = useState<string>('');
 
   // Test API connection on startup
