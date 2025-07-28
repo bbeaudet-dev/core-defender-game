@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import HomeScreen from './components/HomeScreen';
+import HomeScreen from './components/home/HomeScreen';
+import DownloadScreen from './components/login/DownloadScreen';
 import LoginScreen from './components/login/LoginScreen';
-import WelcomeGameScreen from './components/login/WelcomeGameScreen';
 import AboutScreen from './components/Modules/about/AboutScreen';
 import CoreVitalsScreen from './components/Modules/about/CoreVitalsScreen';
 import SystemModule from './components/Modules/about/System/SystemModule';
@@ -107,7 +107,7 @@ function AppContent() {
   if (gameState === 'welcome') {
     return (
       <View className="flex-1">
-        <WelcomeGameScreen 
+        <DownloadScreen 
           type={loginType}
           guestUsername={guestUsername}
           onDownload={handleDownload}

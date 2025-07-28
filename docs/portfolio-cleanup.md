@@ -342,6 +342,57 @@ This document outlines the comprehensive cleanup and improvements needed to make
 - New victory animation component
 - Update game completion flow
 
+## 18. Component Cleanup and Renaming
+
+### Issue
+
+- BugIcons and BugAnimation components are not being used
+- BugAnimation contains system compromise animation, should be renamed
+- LoginScreen and WelcomeGameScreen are redundant
+- infectionSequence utility appears to be obsolete
+
+### Tasks
+
+- [x] Delete unused BugIcons component
+- [x] Rename BugAnimation to SystemCompromisedAnimation
+- [x] Remove bug-related content from SystemCompromisedAnimation
+- [x] Fix guest access delay by removing redundant delay in LoginScreen
+- [x] Remove obsolete infectionSequence utility
+- [x] Update all imports and references
+
+### Files to Delete/Modify
+
+- Delete: `app/components/infection/BugIcons.tsx`
+- Rename: `app/components/infection/BugAnimation.tsx` → `app/components/infection/SystemCompromisedAnimation.tsx`
+- Delete: `app/components/login/WelcomeGameScreen.tsx`
+- Delete: `app/utils/infectionSequence.ts`
+- Update: `app/components/ui/AppIconWithHalo.tsx` (remove BugIcon import)
+- Update: All references to deleted/renamed components
+
+## 19. Data Centralization and Standardization
+
+### Issue
+
+- Module data is scattered across components
+- Layout configurations are hardcoded
+- No centralized data management system
+
+### Tasks
+
+- [ ] Create centralized data structure in `app/data/`
+- [ ] Standardize module configurations
+- [ ] Create layout configuration system
+- [ ] Move hardcoded data to centralized files
+- [ ] Implement data-driven module system
+
+### Files to Create/Modify
+
+- Create: `app/data/modules.ts` (module configurations)
+- Create: `app/data/layouts.ts` (layout configurations)
+- Create: `app/data/constants.ts` (app constants)
+- Create: `app/data/types.ts` (shared types)
+- Update: All module components to use centralized data
+
 ## Implementation Priority
 
 ### High Priority (Critical Bugs)
@@ -350,25 +401,27 @@ This document outlines the comprehensive cleanup and improvements needed to make
 2. End game logic fix
 3. Infection progress bar fix
 4. Error message fixes
+5. Component cleanup and renaming
 
 ### Medium Priority (User Experience)
 
-5. Font standardization
-6. Header and layout improvements
-7. Calculator improvements
-8. Microphone layout
-9. System app restructure
+6. Font standardization
+7. Header and layout improvements
+8. Calculator improvements
+9. Microphone layout
+10. System app restructure
+11. Data centralization and standardization
 
 ### Low Priority (Polish)
 
-10. Tutorial to About rename
-11. Sound effects cleanup
-12. Music module enhancement
-13. Terminal cleanup
-14. Bugged effects enhancement
-15. Boss battle rework
-16. Victory animation
-17. Codebase structure improvements
+12. Tutorial to About rename
+13. Sound effects cleanup
+14. Music module enhancement
+15. Terminal cleanup
+16. Bugged effects enhancement
+17. Boss battle rework
+18. Victory animation
+19. Codebase structure improvements
 
 ## Testing Checklist
 
@@ -389,3 +442,9 @@ This document outlines the comprehensive cleanup and improvements needed to make
 - Document any breaking changes
 - Test thoroughly before deployment
 - Consider user feedback for priority adjustments
+
+
+## More to add
+
+- Fix live data plots
+- 

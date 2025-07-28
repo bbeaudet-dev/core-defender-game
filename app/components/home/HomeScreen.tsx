@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { useInfection } from '../contexts/InfectionContext';
-import { usePuzzle } from '../contexts/PuzzleContext';
-import { playBackgroundMusic } from '../utils/soundManager';
-import { PUZZLE_TO_MODULE, shouldModuleBeUnlocked } from '../utils/unlockSystem';
-import InfectionProgressBar from './infection/InfectionProgressBar';
-import AppIconWithHalo from './ui/AppIconWithHalo';
-import ScreenTemplate from './ui/ScreenTemplate';
+import { useInfection } from '../../contexts/InfectionContext';
+import { usePuzzle } from '../../contexts/PuzzleContext';
+import { playBackgroundMusic } from '../../utils/soundManager';
+import { PUZZLE_TO_MODULE, shouldModuleBeUnlocked } from '../../utils/unlockSystem';
+import AppIconWithHalo from '../ui/AppIconWithHalo';
+import ScreenTemplate from '../ui/ScreenTemplate';
+import InfectionProgressBar from './InfectionProgressBar';
 
 // Define app status types
 type AppStatus = 'completed' | 'in-progress' | 'locked' | 'default';
@@ -57,27 +57,7 @@ const ALL_MODULES: AppModule[] = [
   { name: 'accelerometer', displayName: 'ACCELERATE', icon: '⏫', color: 'bg-purple-600', route: 'accelerometer', status: 'locked' },
 ];
 
-// Bug type assignments for locked modules
-const BUG_ASSIGNMENTS: Record<string, 'caterpillar' | 'beetle' | 'spider' | 'ant' | 'fly' | 'worm'> = {
-  'system': 'spider',
-  'camera': 'beetle',
-  'maps': 'fly',
-  'terminal': 'caterpillar',
-  'accelerometer': 'worm',
-  'compass': 'spider',
-  'games': 'beetle',
-  'wifi': 'ant',
-  'tutorial': 'worm',
-  'calculator': 'caterpillar',
-  'clock': 'spider',
-  'flashlight': 'beetle',
-  'music': 'ant',
-  'weather': 'fly',
-  'finalboss': 'spider',
-  'battery': 'fly',
-  'gyro': 'worm',
-  'microphone': 'ant',
-};
+
 
 export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   const { infectionProgress, infectionStatus } = useInfection();
@@ -198,7 +178,7 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
                 onPress={() => handleAppPress(module.name)}
                 status={getModuleStatus(module.name)}
                 badge={getModuleBadge(module.name)}
-                bugType={BUG_ASSIGNMENTS[module.name]}
+
                 showUnlockAnimation={unlockAnimations[module.name] || false}
                 isFinalBossDefeated={isFinalBossDefeated}
               />

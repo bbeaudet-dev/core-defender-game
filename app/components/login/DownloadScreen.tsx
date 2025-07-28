@@ -105,24 +105,24 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
   const getTitle = () => {
     switch (type) {
       case 'signup':
-        return 'ACCOUNT_CREATED';
+        return 'ACCESS_GRANTED';
       case 'signin':
         return 'ACCESS_GRANTED';
       case 'guest':
         return 'GUEST_ACCESS';
       default:
-        return 'SUCCESS';
+        return 'ACCESS_GRANTED';
     }
   };
 
   const getMessage = () => {
     switch (type) {
       case 'signup':
-        return 'Your account has been successfully created. Welcome to the system.';
+        return `Welcome to the system, ${guestUsername}. Access granted to all modules.`;
       case 'signin':
-        return 'Authentication successful. Access granted to all MODULES.';
+        return `Authentication successful. Welcome back, ${guestUsername}.`;
       case 'guest':
-        return `Welcome, ${guestUsername}.`;
+        return `Welcome, ${guestUsername}. Access granted to all modules.`;
       default:
         return 'Operation completed successfully.';
     }

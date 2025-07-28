@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Animated, Image, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { playSound } from '../../utils/soundManager';
-import BugIcon from '../infection/BugIcons';
 
 // Preload the corruption image to prevent loading delay
 const CORRUPTION_IMAGE = require('../../../assets/images/red_corruption_small.jpg');
@@ -15,7 +14,6 @@ interface AppIconWithHaloProps {
   style?: ViewStyle;
   badge?: string | number;
   status?: 'completed' | 'in-progress' | 'locked' | 'default';
-  bugType?: 'caterpillar' | 'beetle' | 'spider' | 'ant' | 'fly' | 'worm';
   showUnlockAnimation?: boolean;
   isFinalBossDefeated?: boolean;
 }
@@ -37,8 +35,6 @@ export default function AppIconWithHalo({
   style,
   badge,
   status = 'default',
-  bugType = 'caterpillar',
-  showUnlockAnimation = false,
   isFinalBossDefeated = false
 }: AppIconWithHaloProps) {
   const [imageError, setImageError] = useState(false);
@@ -172,13 +168,6 @@ export default function AppIconWithHalo({
             </View>
           )}
           
-          {/* Bug overlay for locked apps */}
-          {status === 'locked' && (
-            <View className="absolute bottom-0 right-0">
-              <BugIcon type={bugType} size={12} />
-            </View>
-          )}
-          
           {/* Icon */}
           <Text className="text-3xl">{getDisplayIcon()}</Text>  
         </TouchableOpacity>
@@ -244,10 +233,6 @@ export default function AppIconWithHalo({
               disabled={disabled || status === 'locked'}
               style={style}
             >
-              {/* Bug overlay */}
-              <View className="absolute bottom-0 right-0">
-                <BugIcon type={bugType} size={12} />
-              </View>
               
               {/* Lock Icon */}
               <Text className="text-3xl">{getDisplayIcon()}</Text>  
