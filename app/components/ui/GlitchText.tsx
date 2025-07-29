@@ -38,11 +38,6 @@ export default function GlitchText({
   const [currentText, setCurrentText] = useState(text);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  console.log('🎨 GlitchText component mounted with text:', text);
-
-  // Debug logging
-  console.log('GlitchText render:', { text, fontSize, width: propWidth, height: propHeight, fontFamily });
-
   // Use provided dimensions or default to screen dimensions
   const canvasWidth = propWidth || 400;
   const canvasHeight = propHeight || 200;
@@ -55,50 +50,39 @@ export default function GlitchText({
   // Try the specified font family
   if (fontFamily) {
     typeface = fontMgr.matchFamilyStyle(fontFamily, FontStyle.Normal);
-    console.log('Trying font family:', fontFamily, 'Success:', !!typeface);
   }
   
   // Fallback to specific Orbitron variants that are definitely available
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Orbitron-Regular', FontStyle.Normal);
-    console.log('Trying Orbitron-Regular, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Orbitron-Bold', FontStyle.Normal);
-    console.log('Trying Orbitron-Bold, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Orbitron-Medium', FontStyle.Normal);
-    console.log('Trying Orbitron-Medium, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Orbitron', FontStyle.Normal);
-    console.log('Trying Orbitron, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('OCR-A', FontStyle.Normal);
-    console.log('Trying OCR-A, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('SpaceMono', FontStyle.Normal);
-    console.log('Trying SpaceMono, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Arial', FontStyle.Normal);
-    console.log('Trying Arial, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Helvetica', FontStyle.Normal);
-    console.log('Trying Helvetica, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('System', FontStyle.Normal);
-    console.log('Trying System, Success:', !!typeface);
   }
   if (!typeface) {
     // Final fallback to default
     typeface = fontMgr.matchFamilyStyle('', FontStyle.Normal);
-    console.log('Trying default font, Success:', !!typeface);
   }
 
   const font = Skia.Font(typeface, fontSize);
@@ -106,8 +90,6 @@ export default function GlitchText({
 
   const textHeight = font.measureText(currentText).height;
   const textWidth = font.measureText(currentText).width;
-
-  console.log('🎯 Final font loaded:', !!typeface, 'Text measurements:', textHeight, textWidth);
 
   // Calculate text position based on alignment
   let textX: number;
@@ -162,7 +144,6 @@ export default function GlitchText({
   };
 
   const triggerAnimation = useCallback(() => {
-    console.log('🔥 Glitch animation triggered');
     setIsAnimating(true);
     
     // Start the glitch animation
@@ -176,12 +157,10 @@ export default function GlitchText({
     // Reset animation state
     setTimeout(() => {
       setIsAnimating(false);
-      console.log('✅ Animation completed');
     }, animationSpeed * 4);
   }, [animationSpeed, rectX]);
 
   useEffect(() => {
-    console.log('🎬 Setting up glitch animation interval:', animationInterval);
     const interval = setInterval(() => {
       triggerAnimation();
     }, animationInterval);
@@ -189,7 +168,6 @@ export default function GlitchText({
   }, [triggerAnimation, animationInterval]);
 
   if (!typeface || textHeight === 0 || textWidth === 0) {
-    console.log('Using fallback text rendering');
     const fallbackTypeface = fontMgr.matchFamilyStyle('', FontStyle.Normal);
     const fallbackFont = Skia.Font(fallbackTypeface, fontSize);
     

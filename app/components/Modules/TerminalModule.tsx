@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { usePuzzle } from '../../contexts/PuzzleContext';
+import { FONTS } from '../../data/fonts';
 import { getModuleBackgroundImage } from '../../data/modules';
 import { playSound } from '../../utils/soundManager';
 import ScreenTemplate from '../ui/ScreenTemplate';
-import { TYPOGRAPHY, FONTS } from '../../data/fonts';
 
 interface TerminalModuleProps {
   onGoHome: () => void;
@@ -23,28 +23,24 @@ const TERMINAL_HISTORY_KEY = 'terminal_history';
 export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<TerminalCommand[]>([]);
-  const [currentLine, setCurrentLine] = useState('$ ');
   const scrollViewRef = useRef<ScrollView>(null);
-  const { puzzleState, completePuzzle, getPuzzleConfig, getCompletedPuzzles } = usePuzzle();
+  const { puzzleState, completePuzzle, getCompletedPuzzles } = usePuzzle();
 
   const completedPuzzles = getCompletedPuzzles();
   const backgroundImage = getModuleBackgroundImage('terminal', completedPuzzles, false);
 
-  // Terminal codes that unlock puzzles
-  const terminalCodes = {
-    'SOS': { puzzleId: 'flashlight_morse', message: 'Morse code transmission verified. Flashlight module unlocked.' },
-    '42': { puzzleId: 'calculator_puzzle', message: 'Mathematical calculation verified. Calculator module unlocked.' },
-    'NORTH': { puzzleId: 'compass_orientation', message: 'Directional calibration verified. Compass module unlocked.' },
-    'CHARGE': { puzzleId: 'battery_charge', message: 'Power restoration verified. Battery module unlocked.' },
-    'MOVE': { puzzleId: 'accelerometer_movement', message: 'Motion detection verified. Accelerometer module unlocked.' },
-    'ROTATE': { puzzleId: 'gyroscope_rotation', message: 'Rotation calibration verified. Gyroscope module unlocked.' },
-    'SPEAK': { puzzleId: 'microphone_level', message: 'Audio test verified. Microphone module unlocked.' },
-    'NAVIGATE': { puzzleId: 'location_navigate', message: 'Navigation verified. Maps module unlocked.' },
+  // Simplified puzzle codes - more intuitive
+  const puzzleCodes = {
+    'HELP': { puzzleId: 'terminal_access', message: 'Terminal access granted. Welcome to the system.' },
+    'FLASHLIGHT': { puzzleId: 'flashlight_morse', message: 'Flashlight module activated.' },
+    'CALCULATOR': { puzzleId: 'calculator_puzzle', message: 'Calculator module unlocked.' },
+    'COMPASS': { puzzleId: 'compass_orientation', message: 'Compass module calibrated.' },
+    'BATTERY': { puzzleId: 'battery_charge', message: 'Battery module restored.' },
+    'ACCELEROMETER': { puzzleId: 'accelerometer_movement', message: 'Accelerometer module online.' },
+    'GYROSCOPE': { puzzleId: 'gyroscope_rotation', message: 'Gyroscope module calibrated.' },
+    'MICROPHONE': { puzzleId: 'microphone_level', message: 'Microphone module activated.' },
+    'MAPS': { puzzleId: 'location_navigate', message: 'Maps module unlocked.' },
   };
-
-  // Final puzzle code that reveals the secret message
-  const finalPuzzleCode = 'RESTORE';
-  const secretMessage = 'SYSTEM RESTORED - ALL MODULES ONLINE';
 
   // Load terminal history from AsyncStorage
   useEffect(() => {
@@ -63,17 +59,17 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
         const parsedHistory = JSON.parse(savedHistory);
         setHistory(parsedHistory);
       } else {
-        // Initialize with default history if none exists
+        // Initialize with helpful default history
         const defaultHistory: TerminalCommand[] = [
           { 
-            command: 'system status', 
-            output: 'System: COMPROMISED\nCore: LOCKED\nAccess: DENIED',
-            timestamp: Date.now() - 60000
+            command: 'help', 
+            output: 'Available commands:\n- help: Show this help\n- status: Show system status\n- unlock [module]: Unlock a module\n- clear: Clear terminal',
+            timestamp: Date.now() - 30000
           },
           { 
-            command: 'help', 
-            output: 'Available commands: status, unlock, inspect, help, solve, clear',
-            timestamp: Date.now() - 30000
+            command: 'status', 
+            output: 'System: COMPROMISED\nCore: LOCKED\nAccess: DENIED\n\nAvailable modules: FLASHLIGHT, CALCULATOR, COMPASS, BATTERY, ACCELEROMETER, GYROSCOPE, MICROPHONE, MAPS',
+            timestamp: Date.now() - 20000
           },
         ];
         setHistory(defaultHistory);
@@ -83,14 +79,14 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
       // Fallback to default history
       const defaultHistory: TerminalCommand[] = [
         { 
-          command: 'system status', 
-          output: 'System: COMPROMISED\nCore: LOCKED\nAccess: DENIED',
-          timestamp: Date.now() - 60000
+          command: 'help', 
+          output: 'Available commands:\n- help: Show this help\n- status: Show system status\n- unlock [module]: Unlock a module\n- clear: Clear terminal',
+          timestamp: Date.now() - 30000
         },
         { 
-          command: 'help', 
-          output: 'Available commands: status, unlock, inspect, help, solve, clear',
-          timestamp: Date.now() - 30000
+          command: 'status', 
+          output: 'System: COMPROMISED\nCore: LOCKED\nAccess: DENIED\n\nAvailable modules: FLASHLIGHT, CALCULATOR, COMPASS, BATTERY, ACCELEROMETER, GYROSCOPE, MICROPHONE, MAPS',
+          timestamp: Date.now() - 20000
         },
       ];
       setHistory(defaultHistory);
@@ -127,79 +123,42 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
 
   const executeCommand = (cmd: string) => {
     playSound('ui_button_tap');
-    const command = cmd.trim().toLowerCase();
-    
-    // Check for terminal access puzzle completion
-    if (command === 'access' && !puzzleState['terminal_access']?.isComplete) {
-      completePuzzle('terminal_access');
-      addToHistory(cmd, 'Terminal access granted. Adjacent modules unlocked.', 'text-green-400');
-      return;
-    }
+    const command = cmd.trim().toUpperCase();
     
     switch (command) {
-      case 'help':
-        addToHistory(cmd, 'Available commands:\n- status: Show system status\n- unlock: Attempt to unlock core\n- inspect: Inspect modules\n- solve [code]: Solve puzzle with code\n- access: Gain terminal access (puzzle)\n- clear: Clear terminal\n- help: Show this help');
+      case 'HELP':
+        addToHistory(cmd, 'Available commands:\n- help: Show this help\n- status: Show system status\n- unlock [module]: Unlock a module\n- clear: Clear terminal\n\nExample: unlock FLASHLIGHT');
         break;
         
-      case 'status':
-        const completedPuzzles = Object.values(puzzleState).filter(p => p.isComplete).length;
-        const totalPuzzles = Object.keys(puzzleState).length;
-        addToHistory(cmd, `System Status:\n- Core: ${completedPuzzles >= totalPuzzles ? 'UNLOCKED' : 'LOCKED'}\n- Modules: ${completedPuzzles}/${totalPuzzles} restored\n- Access: ${completedPuzzles >= totalPuzzles ? 'GRANTED' : 'DENIED'}`);
+      case 'STATUS':
+        const completedCount = Object.values(puzzleState).filter(p => p.isComplete).length;
+        const totalCount = Object.keys(puzzleState).length;
+        addToHistory(cmd, `System Status:\n- Core: ${completedCount >= totalCount ? 'UNLOCKED' : 'LOCKED'}\n- Modules: ${completedCount}/${totalCount} restored\n- Access: ${completedCount >= totalCount ? 'GRANTED' : 'DENIED'}\n\nAvailable modules: FLASHLIGHT, CALCULATOR, COMPASS, BATTERY, ACCELEROMETER, GYROSCOPE, MICROPHONE, MAPS`);
         break;
         
-      case 'unlock':
-        if (Object.values(puzzleState).every(p => p.isComplete)) {
-          addToHistory(cmd, 'Core unlocked! All systems restored.', 'text-green-400');
-        } else {
-          addToHistory(cmd, 'ERROR: Complete all puzzles first', 'text-red-400');
-        }
-        break;
-        
-      case 'inspect':
-        const moduleStatus = Object.entries(puzzleState).map(([id, state]) => {
-          const config = getPuzzleConfig(id);
-          return `- ${config?.name || id}: ${state.isComplete ? 'ONLINE' : 'OFFLINE'}`;
-        }).join('\n');
-        addToHistory(cmd, `Module Status:\n${moduleStatus}`);
-        break;
-        
-      case 'clear':
+      case 'CLEAR':
         setHistory([]);
         break;
         
       default:
-        if (command.startsWith('solve ')) {
-          const code = cmd.substring(6).trim().toUpperCase();
-          handlePuzzleCode(code);
+        if (command.startsWith('UNLOCK ')) {
+          const moduleName = command.substring(7).trim();
+          handleUnlockModule(moduleName);
         } else {
-          addToHistory(cmd, `Command not found: ${command}`, 'text-red-400');
+          addToHistory(cmd, `Command not found: ${command}\nType 'help' for available commands.`, 'text-red-400');
         }
         break;
     }
   };
 
-  const handlePuzzleCode = (code: string) => {
-    // Check if it's a terminal code
-    if (terminalCodes[code as keyof typeof terminalCodes]) {
-      const puzzleInfo = terminalCodes[code as keyof typeof terminalCodes];
+  const handleUnlockModule = (moduleName: string) => {
+    // Check if it's a valid puzzle code
+    if (puzzleCodes[moduleName as keyof typeof puzzleCodes]) {
+      const puzzleInfo = puzzleCodes[moduleName as keyof typeof puzzleCodes];
       completePuzzle(puzzleInfo.puzzleId);
-      addToHistory(`solve ${code}`, puzzleInfo.message, 'text-yellow-400');
-    }
-    // Check if it's the final puzzle code
-    else if (code === finalPuzzleCode) {
-      if (Object.values(puzzleState).every(p => p.isComplete)) {
-        addToHistory(`solve ${code}`, `🎉 ${secretMessage} 🎉`, 'text-green-400');
-        addToHistory('', 'Congratulations! You have successfully restored the system.', 'text-green-400');
-      } else {
-        addToHistory(`solve ${code}`, 'ERROR: Complete all puzzles first', 'text-red-400');
-      }
-    }
-    // Check if it's a valid puzzle code but not completed
-    else if (Object.keys(terminalCodes).includes(code)) {
-      addToHistory(`solve ${code}`, 'ERROR: Puzzle not yet available', 'text-red-400');
-    }
-    else {
-      addToHistory(`solve ${code}`, 'ERROR: Invalid code', 'text-red-400');
+      addToHistory(`unlock ${moduleName}`, `✅ ${puzzleInfo.message}`, 'text-green-400');
+    } else {
+      addToHistory(`unlock ${moduleName}`, `❌ Module '${moduleName}' not found.\n\nAvailable modules: FLASHLIGHT, CALCULATOR, COMPASS, BATTERY, ACCELEROMETER, GYROSCOPE, MICROPHONE, MAPS`, 'text-red-400');
     }
   };
 
@@ -207,19 +166,6 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
     if (input.trim()) {
       executeCommand(input);
       setInput('');
-    }
-  };
-
-  const getColorClass = (color?: string) => {
-    switch (color) {
-      case 'text-red-400':
-        return 'text-red-400';
-      case 'text-yellow-400':
-        return 'text-yellow-400';
-      case 'text-green-400':
-        return 'text-green-400';
-      default:
-        return 'text-green-400';
     }
   };
 
@@ -242,21 +188,21 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
       >
         {history.map((item, index) => (
           <View key={index} className="mb-2">
-            <Text className="text-gray-500 text-xs mb-1" style={{ fontFamily: FONTS.TERMINAL }}>
+            <Text className="text-gray-500 text-xs mb-1" style={{ fontFamily: FONTS.MONO }}>
               [{formatTimestamp(item.timestamp)}]
             </Text>
-            <Text className="text-green-400 text-sm" style={{ fontFamily: FONTS.TERMINAL }}>$ {item.command}</Text>
-            <Text className={`text-sm ${getColorClass(item.color)}`} style={{ fontFamily: FONTS.TERMINAL }}>
+            <Text className="text-green-400 text-sm" style={{ fontFamily: FONTS.MONO }}>$ {item.command}</Text>
+            <Text className={`text-sm ${item.color || 'text-green-400'}`} style={{ fontFamily: FONTS.MONO }}>
               {item.output}
             </Text>
           </View>
         ))}
-        <Text className="text-green-400 text-sm" style={{ fontFamily: FONTS.TERMINAL }}>$ </Text>
+        <Text className="text-green-400 text-sm" style={{ fontFamily: FONTS.MONO }}>$ </Text>
       </ScrollView>
 
       {/* Input Section */}
       <View className="flex-row items-center bg-gray-900 rounded-lg p-2">
-        <Text className="text-green-400 text-sm mr-2" style={{ fontFamily: FONTS.TERMINAL }}>$</Text>
+        <Text className="text-green-400 text-sm mr-2" style={{ fontFamily: FONTS.MONO }}>$</Text>
         <TextInput
           value={input}
           onChangeText={setInput}
@@ -266,29 +212,45 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
           placeholderTextColor="#6b7280"
           autoCapitalize="none"
           autoCorrect={false}
-          style={{ fontFamily: FONTS.TERMINAL }}
+          style={{ fontFamily: FONTS.MONO }}
         />
         <TouchableOpacity
           onPress={handleSubmit}
           className="bg-green-600 px-3 py-1 rounded"
         >
-          <Text className="text-white text-sm" style={{ fontFamily: FONTS.TERMINAL }}>EXEC</Text>
+          <Text className="text-white text-sm" style={{ fontFamily: FONTS.MONO }}>EXEC</Text>
         </TouchableOpacity>
       </View>
 
       {/* Quick Commands */}
       <View className="mt-4">
-        <Text className="text-gray-400 text-xs mb-2" style={{ fontFamily: FONTS.TERMINAL }}>QUICK COMMANDS:</Text>
+        <Text className="text-gray-400 text-xs mb-2" style={{ fontFamily: FONTS.MONO }}>QUICK COMMANDS:</Text>
         <View className="flex-row flex-wrap">
-          {['help', 'status', 'inspect', 'clear'].map(cmd => (
+          {['help', 'status', 'clear'].map(cmd => (
             <TouchableOpacity
               key={cmd}
               onPress={() => executeCommand(cmd)}
               className="bg-gray-800 px-3 py-1 rounded mr-2 mb-2"
             >
-              <Text className="text-green-400 text-xs" style={{ fontFamily: FONTS.TERMINAL }}>{cmd}</Text>
+              <Text className="text-green-400 text-xs" style={{ fontFamily: FONTS.MONO }}>{cmd}</Text>
             </TouchableOpacity>
           ))}
+        </View>
+        
+        {/* Module Unlock Hints */}
+        <View className="mt-4">
+          <Text className="text-gray-400 text-xs mb-2" style={{ fontFamily: FONTS.MONO }}>UNLOCK MODULES:</Text>
+          <View className="flex-row flex-wrap">
+            {Object.keys(puzzleCodes).map(module => (
+              <TouchableOpacity
+                key={module}
+                onPress={() => executeCommand(`unlock ${module}`)}
+                className="bg-gray-800 px-3 py-1 rounded mr-2 mb-2"
+              >
+                <Text className="text-blue-400 text-xs" style={{ fontFamily: FONTS.MONO }}>{module}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
     </ScreenTemplate>

@@ -85,9 +85,8 @@ export function PuzzleProvider({ children }: { children: React.ReactNode }) {
           unlockModule(moduleName as any);
         });
         
-        // Check if this was the final puzzle (all 13 completed)
-        const completedCount = Object.values(newState).filter((p: any) => p.isComplete).length;
-        if (completedCount >= 13) {
+        // Check if this was the final boss puzzle completion
+        if (puzzleId === 'finalboss_defeat') {
           // Send final boss defeated notification
           notificationManager.sendFinalBossDefeatedNotification();
         }

@@ -6,6 +6,7 @@ import { usePuzzle } from '../../contexts/PuzzleContext';
 import { getModuleBackgroundImage } from '../../data/modules';
 
 import { playSound } from '@/app/utils/soundManager';
+import React from 'react';
 import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface CompassModuleProps {
@@ -266,9 +267,8 @@ export default function CompassModule({ onGoHome }: CompassModuleProps) {
               const textY = 175 - 170 * Math.cos(angle);
               
               return (
-                <>
+                <React.Fragment key={`direction-${index}`}>
                   <Line
-                    key={`line-${index}`}
                     x1={x1}
                     y1={y1}
                     x2={x2}
@@ -277,7 +277,6 @@ export default function CompassModule({ onGoHome }: CompassModuleProps) {
                     strokeWidth={dir.text === 'N' ? '3' : '1'}
                   />
                   <SvgText
-                    key={`text-${index}`}
                     x={textX}
                     y={textY}
                     fontSize="18"
@@ -288,7 +287,7 @@ export default function CompassModule({ onGoHome }: CompassModuleProps) {
                   >
                     {dir.text}
                   </SvgText>
-                </>
+                </React.Fragment>
               );
             })}
             
