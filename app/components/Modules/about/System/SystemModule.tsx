@@ -19,12 +19,13 @@ export default function SystemModule({
   onGoToCoreVitals, 
   onSelfDestruct 
 }: SystemModuleProps) {
-  const { completePuzzle, puzzleState } = usePuzzle();
+  const { completePuzzle, puzzleState, getCompletedPuzzles } = usePuzzle();
   const [securityCode, setSecurityCode] = useState('');
   const [showPuzzle, setShowPuzzle] = useState(false);
   const [attempts, setAttempts] = useState(0);
   
   const isSystemSecurityComplete = puzzleState['system_security']?.isComplete || false;
+  const completedPuzzles = getCompletedPuzzles();
 
   const handleSecurityBypass = () => {
     if (isSystemSecurityComplete) return;
@@ -56,7 +57,7 @@ export default function SystemModule({
       title="SYSTEM" 
       titleColor="red" 
       onGoHome={onGoHome}
-      backgroundImage={getModuleBackgroundImage('system', [], false)}
+      backgroundImage={getModuleBackgroundImage('system', completedPuzzles, false)}
     >
       <ScrollView className="flex-1">
         {/* Device Section */}

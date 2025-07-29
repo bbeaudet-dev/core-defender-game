@@ -118,30 +118,38 @@ export default function SpeedPlot({
 
   const expectedGravity = getExpectedGravity(unitType);
   const baseline = normalized ? expectedGravity : 0;
-  const maxValue = Math.max(maxSpeed, ...plotData);
-  const minValue = Math.min(0, ...plotData);
-  const range = maxValue - minValue;
+  
+  // DYNAMIC SCALING: Start with a small range and expand as max value increases
+  const currentMax = Math.max(maxSpeed, ...plotData);
+  const currentMin = Math.min(0, ...plotData);
+  
+  // Start with a small range (e.g., 0-10) and expand dynamically
+  const minRange = 5; // Start with 5 units range
+  const dynamicRange = Math.max(currentMax - currentMin, minRange);
+  
+  // Ensure the plot can always show the current maximum
+  const plotMax = currentMax + (dynamicRange * 0.1); // Add 10% padding above max
+  const plotMin = Math.max(0, currentMin - (dynamicRange * 0.05)); // Add 5% padding below min
   
   const width = 300;
   const height = 80;
-  const padding = 20; // Increased padding for labels
+  const padding = 20;
   const plotWidth = width - 2 * padding;
   const plotHeight = height - 2 * padding;
-  const labelWidth = 40; // Width for Y-axis labels
-  const totalWidth = width + labelWidth; // Total width including labels
 
   const points = plotData.map((speed, index) => {
     const x = padding + (index / (plotData.length - 1)) * plotWidth;
-    const normalizedSpeed = range > 0 ? (speed - minValue) / range : 0.5;
-    const y = height - padding - normalizedSpeed * plotHeight;
+    // Scale to fit within the dynamic range
+    const normalizedSpeed = (speed - plotMin) / (plotMax - plotMin);
+    const y = height - padding - (normalizedSpeed * plotHeight);
     return `${x},${y}`;
   }).join(' ');
 
-  // Generate Y-axis labels
+  // Generate Y-axis labels based on the dynamic range
   const yLabels = [];
-  const numLabels = 5;
+  const numLabels = 4; // Fewer labels to avoid clutter
   for (let i = 0; i <= numLabels; i++) {
-    const value = minValue + (maxValue - minValue) * (i / numLabels);
+    const value = plotMin + (plotMax - plotMin) * (i / numLabels);
     yLabels.push({
       value: value.toFixed(1),
       y: height - padding - (i / numLabels) * plotHeight
@@ -163,8 +171,8 @@ export default function SpeedPlot({
 
       <View className="bg-gray-800 rounded-lg p-2">
         <View className="flex-row items-center">
-          {/* Y-axis labels outside the plot */}
-          <View className="w-10 flex justify-between items-end pr-2">
+          {/* Y-axis labels on the left */}
+          <View className="w-12 flex justify-between items-end pr-2">
             {yLabels.map((label, index) => (
               <Text key={index} className="text-gray-500 text-xs font-mono">
                 {label.value}
@@ -172,7 +180,7 @@ export default function SpeedPlot({
             ))}
           </View>
           
-          {/* Plot with proper width */}
+          {/* Plot */}
           <Svg width={width} height={height}>
             <Polyline
               points={points}
