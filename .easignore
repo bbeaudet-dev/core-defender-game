@@ -1,0 +1,19 @@
+# Exclude unnecessary files from EAS builds
+node_modules/
+.git/
+.expo/
+dist/
+docs/
+*.log
+.DS_Store
+*.md
+.vscode/
+*.tsbuildinfo
+
+# Exclude Lottie files (we removed Lottie dependencies)
+assets/animations/*.json
+assets/animations/*.lottie
+
+# Keep video files (they're needed for the app)
+# assets/animations/*.mp4
+# assets/animations/*.gif 
