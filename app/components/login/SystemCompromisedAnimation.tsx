@@ -26,18 +26,20 @@ export default function SystemCompromisedAnimation({
     startSystemCompromiseAnimation();
   }, []);
 
-  // Stop animations when video starts playing
+  // Keep animations running until component unmounts
+  // This ensures no stationary moment - animations will naturally stop when component is removed
   useEffect(() => {
-    if (isVideoPlaying) {
-      console.log('🎬 Video started - stopping alarm animations');
+    // Only stop animations when component unmounts
+    return () => {
+      console.log('🎬 Component unmounting - stopping alarm animations');
       if (buttonPulseSequenceRef.current) {
         buttonPulseSequenceRef.current.stop();
       }
       if (flashSequenceRef.current) {
         flashSequenceRef.current.stop();
       }
-    }
-  }, [isVideoPlaying]);
+    };
+  }, []);
 
   // Start the system compromise animation
   const startSystemCompromiseAnimation = () => {
@@ -117,9 +119,9 @@ export default function SystemCompromisedAnimation({
     // This creates an overlap between alarm and video transition
     setTimeout(() => {
       // Don't stop animations - let them continue until video starts
-      console.log('🚨 Alarm calling onComplete 1 second early');
+      console.log('🚨 Alarm calling onComplete 600ms early');
       onComplete(); // Call onComplete early to start video transition
-    }, GAME_CONFIG.ALARM_DURATION - 1000); // 1 second before alarm ends
+    }, GAME_CONFIG.ALARM_DURATION - 600); // 600ms before alarm ends (30% of 2 seconds)
   };
 
   return (

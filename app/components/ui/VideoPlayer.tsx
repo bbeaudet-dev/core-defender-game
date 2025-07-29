@@ -1,5 +1,5 @@
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableWithoutFeedback, View } from 'react-native';
 import { GAME_CONFIG } from '../../lib/config';
 
@@ -8,7 +8,7 @@ interface VideoPlayerProps {
   onComplete: () => void;
   onStart?: () => void; // Callback when video starts playing
   onEnd?: () => void; // Callback when video is about to end
-  duration?: number; // Duration in milliseconds
+  duration?: number; // Duration in milliseconds (fallback)
   videoAspectRatio?: number; // width/height ratio (e.g., 9/16 = 0.5625)
 }
 
@@ -17,11 +17,15 @@ export default function VideoPlayer({
   onComplete, 
   onStart,
   onEnd,
-  duration = GAME_CONFIG.VIDEO_DURATION, // Use shared constant
+  duration = GAME_CONFIG.VIDEO_DURATION, // Fallback duration
   videoAspectRatio = 9/16 // Default to 9:16 aspect ratio
 }: VideoPlayerProps) {
   const screenHeight = Dimensions.get('window').height;
   const screenWidth = Dimensions.get('window').width;
+  const [actualDuration, setActualDuration] = useState<number | null>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const endTimerRef = useRef<number | null>(null);
+  const completeTimerRef = useRef<number | null>(null);
   
   // Calculate width needed to fill full screen height while maintaining video aspect ratio
   // This will make the video touch top and bottom, even if width extends beyond screen
@@ -47,40 +51,77 @@ export default function VideoPlayer({
   const player = useVideoPlayer(source, player => {
     if (player) {
       player.loop = false;
+      
+      // Get the actual video duration when the player is ready
+      const getVideoDuration = async () => {
+        try {
+          // Try to get duration immediately, no delay
+          if (player.duration) {
+            const durationMs = player.duration * 1000; // Convert to milliseconds
+            console.log(`🎬 Actual video duration: ${player.duration}s (${durationMs}ms)`);
+            setActualDuration(durationMs);
+            setIsVideoLoaded(true);
+          } else {
+            console.log(`🎬 Could not get video duration, using fallback: ${duration}ms`);
+            setActualDuration(duration);
+            setIsVideoLoaded(true);
+          }
+        } catch (error) {
+          console.log(`🎬 Error getting video duration, using fallback: ${duration}ms`, error);
+          setActualDuration(duration);
+          setIsVideoLoaded(true);
+        }
+      };
+      
+      getVideoDuration();
       player.play();
       
-      // Notify that video has started playing
+      // Notify that video has started playing - use useEffect to avoid render phase updates
       if (onStart) {
-        // Small delay to ensure video is actually playing
+        // Use setTimeout to defer the callback to the next tick
         setTimeout(() => {
           onStart();
-        }, 100);
+        }, 0);
       }
     }
   });
 
-  // Complete when video duration is reached
+  // Set up timers when actual duration is available
   useEffect(() => {
-    // Call onEnd much earlier to show reboot overlay while video is definitely still playing
-    if (onEnd) {
-      const endTimer = setTimeout(() => {
-        console.log('🎬 Video ending (2000ms before completion)');
-        onEnd();
-      }, duration - 2000); // 2000ms before end (increased from 1000ms)
-      
-      return () => clearTimeout(endTimer);
+    if (!isVideoLoaded || !actualDuration) return;
+    
+    // Clear any existing timers
+    if (endTimerRef.current) {
+      clearTimeout(endTimerRef.current);
     }
-  }, [duration, onEnd]);
-
-  // Complete when video duration is reached
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log('🎬 Video playback completed');
+    if (completeTimerRef.current) {
+      clearTimeout(completeTimerRef.current);
+    }
+    
+    // Call onEnd 1 second before video completion
+    if (onEnd) {
+      endTimerRef.current = setTimeout(() => {
+        console.log(`🎬 Video ending (1000ms before completion at ${actualDuration}ms)`);
+        onEnd();
+      }, actualDuration - 1000);
+    }
+    
+    // Call onComplete when video should finish
+    completeTimerRef.current = setTimeout(() => {
+      console.log(`🎬 Video playback completed at ${actualDuration}ms`);
       onComplete();
-    }, duration);
-
-    return () => clearTimeout(timer);
-  }, [duration, onComplete]);
+    }, actualDuration);
+    
+    // Cleanup function
+    return () => {
+      if (endTimerRef.current) {
+        clearTimeout(endTimerRef.current);
+      }
+      if (completeTimerRef.current) {
+        clearTimeout(completeTimerRef.current);
+      }
+    };
+  }, [actualDuration, isVideoLoaded, onEnd, onComplete]);
 
   return (
     <View className="flex-1 bg-black" style={{ height: screenHeight }}>
