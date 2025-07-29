@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import { FONTS } from '../../../data/fonts';
 
 interface CameraStatusProps {
   status: 'loading' | 'error' | 'ready' | 'web';
@@ -42,12 +43,12 @@ export default function CameraStatus({ status, error }: CameraStatusProps) {
 
   return (
     <View className="flex-1 p-5 justify-center items-center">
-      <Text className="text-green-400 text-center text-lg mb-4">{content.title}</Text>
-      <Text className={`text-center text-base mb-2 ${content.color}`}>
+      <Text style={{ fontFamily: FONTS.MONO }} className="text-green-400 text-center text-lg mb-4">{content.title}</Text>
+      <Text style={{ fontFamily: FONTS.MONO }} className={`text-center text-base mb-2 ${content.color}`}>
         {content.subtitle}
       </Text>
       {content.hint && (
-        <Text className="text-gray-500 text-center text-sm">
+        <Text style={{ fontFamily: FONTS.MONO }} className="text-gray-500 text-center text-sm">
           {content.hint}
         </Text>
       )}

@@ -4,6 +4,7 @@ import HomeScreen from './components/home/HomeScreen';
 import DownloadScreen from './components/login/DownloadScreen';
 import LoginScreen from './components/login/LoginScreen';
 import SystemModule from './components/modules/about/System/SystemModule';
+import VideoPlayer from './components/ui/VideoPlayer';
 import { useAuth } from './contexts/AuthContext';
 import { InfectionProvider } from './contexts/InfectionContext';
 import { PuzzleProvider } from './contexts/PuzzleContext';
@@ -45,7 +46,12 @@ function AppContent() {
   }
   
   const handleDownload = () => {
-    // Go directly to home screen
+    // Show video first, then go to home screen
+    setGameState('video');
+  };
+
+  const handleVideoComplete = () => {
+    // Video finished, go to home screen
     setGameState('home');
   };
 
@@ -71,6 +77,18 @@ function AppContent() {
           guestUsername={guestUsername}
           onDownload={handleDownload}
         />        
+      </View>
+    );
+  }
+
+  if (gameState === 'video') {
+    return (
+      <View className="flex-1">
+        <VideoPlayer
+          source={require('../assets/animations/20250728_1948_Digital Demon Emergence_simple_compose_01k19q006vfw1vh5mbjcf6y17m.mp4')}
+          onComplete={handleVideoComplete}
+          duration={5000} // 8 seconds for the video
+        />
       </View>
     );
   }

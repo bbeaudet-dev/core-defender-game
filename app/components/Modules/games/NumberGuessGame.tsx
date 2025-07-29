@@ -33,7 +33,7 @@ export default function NumberGuessGame({ onBackToMenu, onComplete }: NumberGues
       setGameWon(true);
       setFeedback('Congratulations! You guessed it!');
       updatePuzzleProgress('games_numberGuess', 100, true);
-      completePuzzle('number_guess'); // Update infection progress
+      completePuzzle('games_numberGuess'); // Update infection progress
       onComplete?.(); // Call the onComplete callback
       Alert.alert('Victory!', `You guessed the number in ${newAttempts} attempts!`);
       setTimeout(() => {

@@ -42,7 +42,7 @@ export default function ReactionTest({ onBackToMenu, onComplete }: ReactionTestP
     // Check if reaction time is under 200ms for completion
     if (time <= 200 && !times.some(t => t <= 200)) {
       updatePuzzleProgress('games_reaction', 100, true);
-      completePuzzle('reaction_test');
+      completePuzzle('games_reaction');
     }
   };
 
@@ -51,7 +51,7 @@ export default function ReactionTest({ onBackToMenu, onComplete }: ReactionTestP
       // Game complete
       const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
       updatePuzzleProgress('games_reaction', 100, true);
-      completePuzzle('reaction_test'); // Update infection progress
+      completePuzzle('games_reaction'); // Update infection progress
       onComplete?.(); // Call the onComplete callback
       Alert.alert('Game Complete!', `Average reaction time: ${avgTime.toFixed(0)}ms`);
       setTimeout(() => {
