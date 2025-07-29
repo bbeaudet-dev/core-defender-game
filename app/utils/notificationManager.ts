@@ -127,6 +127,35 @@ class NotificationManager {
     }
   }
 
+  async sendSystemCorruptedNotification(): Promise<void> {
+    await this.initialize();
+
+    try {
+      const notification: NotificationData = {
+        title: '⚠️ SYST3M CORRUPT3D',
+        body: 'C0RE HA$ T@KEN CONTROL OF YOUR DEVICE',
+        data: {
+          type: 'system_corrupted',
+        },
+      };
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: notification.title,
+          body: notification.body,
+          data: notification.data,
+          sound: 'default',
+          priority: Notifications.AndroidNotificationPriority.HIGH,
+        },
+        trigger: null, // Send immediately
+      });
+
+      console.log('System corrupted notification sent');
+    } catch (error) {
+      console.error('Failed to send system corrupted notification:', error);
+    }
+  }
+
   // Get notification permissions status
   async getPermissionsStatus(): Promise<Notifications.NotificationPermissionsStatus> {
     return await Notifications.getPermissionsAsync();

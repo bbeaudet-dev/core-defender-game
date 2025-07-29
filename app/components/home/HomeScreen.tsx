@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useInfection } from '../../contexts/InfectionContext';
 import { usePuzzle } from '../../contexts/PuzzleContext';
-import { ALL_MODULES, isModulePuzzleCompleted, shouldModuleBeUnlocked } from '../../data/modules';
+import { ALL_MODULES, GRID_LAYOUT, isModulePuzzleCompleted, shouldModuleBeUnlocked } from '../../data/modules';
 import { HomeScreenProps } from '../../types/game';
 import { AppStatus } from '../../types/modules';
 import { playBackgroundMusic, SoundManager } from '../../utils/soundManager';
 import AppIconWithHalo from '../ui/AppIconWithHalo';
+import FinalBossAppIcon from '../ui/FinalBossAppIcon';
 import ScreenTemplate from '../ui/ScreenTemplate';
 import InfectionProgressBar from './InfectionProgressBar';
 
@@ -121,24 +122,52 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
         showHomeButton={false}
         backgroundImage={backgroundImage}
       >
-        <View className="flex-row flex-wrap justify-center pt-4 pb-24">
-            {ALL_MODULES.map(module => (
-              <View key={module.name} className="w-28 py-2 px-1 mx-1">
-                <AppIconWithHalo
-                  icon={module.icon}
-                  name={module.displayName}
-                  color={module.color}
-                  onPress={() => handleAppPress(module.name)}
-                  status={getModuleStatus(module.name)}
-                  badge={getModuleBadge(module.name)}
+        <View className="pt-4 pb-24">
+          {/* Render grid based on GRID_LAYOUT */}
+          {GRID_LAYOUT.map((row, rowIndex) => (
+            <View key={rowIndex} className="flex-row justify-center mb-1">
+              {row.map((moduleName, colIndex) => {
+                const module = ALL_MODULES.find(m => m.name === moduleName);
+                
+                if (!module) {
+                  // Empty space
+                  return <View key={`${rowIndex}-${colIndex}`} className="w-28 py-2 px-1 mx-1" />;
+                }
 
-                  showUnlockAnimation={unlockAnimations[module.name] || false}
-                  isFinalBossDefeated={isFinalBossDefeated}
-                />
-              </View>
-            ))}
-          </View>
-        </ScreenTemplate>
+                // Special handling for CORE module (finalboss) - make it full width
+                if (module.name === 'finalboss') {
+                  return (
+                    <View key={module.name} className="w-full py-2 px-4">
+                      <FinalBossAppIcon
+                        onPress={() => handleAppPress(module.name)}
+                        status={getModuleStatus(module.name)}
+                        isFinalBossDefeated={isFinalBossDefeated}
+                        showUnlockAnimation={unlockAnimations[module.name] || false}
+                      />
+                    </View>
+                  );
+                }
+                
+                // Regular modules
+                return (
+                  <View key={module.name} className="w-28 py-2 px-1 mx-1">
+                    <AppIconWithHalo
+                      icon={module.icon}
+                      name={module.displayName}
+                      color={module.color}
+                      onPress={() => handleAppPress(module.name)}
+                      status={getModuleStatus(module.name)}
+                      badge={getModuleBadge(module.name)}
+                      showUnlockAnimation={unlockAnimations[module.name] || false}
+                      isFinalBossDefeated={isFinalBossDefeated}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          ))}
+        </View>
+      </ScreenTemplate>
       
       <InfectionProgressBar 
         progress={infectionProgress} 

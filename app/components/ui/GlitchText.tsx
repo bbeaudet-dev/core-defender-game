@@ -4,6 +4,25 @@ import { Text as RNText, View } from 'react-native';
 import { SharedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { FONTS } from '../../data/fonts';
 
+// Predefined color schemes for glitch effects
+export const GLITCH_COLOR_SCHEMES = {
+  default: { primary: '#E5484D', secondary: '#12A594' },      // Red & Green
+  cyberpunk: { primary: '#3B82F6', secondary: '#8B5CF6' },    // Blue & Purple - contrasts with green/red
+  neon: { primary: '#F97316', secondary: '#06B6D4' },         // Orange & Cyan - vibrant against green
+  retro: { primary: '#EAB308', secondary: '#EC4899' },        // Yellow & Magenta
+  matrix: { primary: '#10B981', secondary: '#059669' },       // Green & Dark Green
+  synthwave: { primary: '#F59E0B', secondary: '#EC4899' },    // Amber & Pink - warm against cool green
+  hologram: { primary: '#8B5CF6', secondary: '#06B6D4' },     // Purple & Cyan - ethereal effect
+  glitch: { primary: '#EF4444', secondary: '#3B82F6' },       // Red & Blue - classic glitch
+  electric: { primary: '#10B981', secondary: '#F59E0B' },     // Green & Amber - monochromatic
+  neonPulse: { primary: '#06B6D4', secondary: '#8B5CF6' },    // Cyan & Purple - cool tones
+  retroWave: { primary: '#F59E0B', secondary: '#DC2626' },    // Amber & Red - warm against green
+  digital: { primary: '#6B7280', secondary: '#F3F4F6' },      // Gray & Light Gray - neutral
+  matrixSubtle: { primary: '#059669', secondary: '#10B981' }, // Dark Green & Green - subtle
+} as const;
+
+export type GlitchColorScheme = keyof typeof GLITCH_COLOR_SCHEMES;
+
 interface GlitchTextProps {
   text?: string;
   fontSize?: number;
@@ -14,6 +33,7 @@ interface GlitchTextProps {
   animationInterval2?: number;
   primaryColor?: string;
   secondaryColor?: string;
+  colorScheme?: GlitchColorScheme;
   baseColor?: string;
   opacity?: number;
   fontFamily?: string;
@@ -34,8 +54,9 @@ export default function GlitchText({
   animationSpeed = 100,
   animationInterval = 1800,
   animationInterval2 = 800,
-  primaryColor = '#E5484D',
-  secondaryColor = '#12A594',
+  primaryColor,
+  secondaryColor,
+  colorScheme = 'default',
   baseColor = 'white',
   opacity = 0.9,
   fontFamily = FONTS.GLITCH,
@@ -47,6 +68,10 @@ export default function GlitchText({
   onAnimationStart,
   onAnimationEnd
 }: GlitchTextProps) {
+  // Use color scheme if no custom colors provided
+  const scheme = GLITCH_COLOR_SCHEMES[colorScheme];
+  const finalPrimaryColor = primaryColor || scheme.primary;
+  const finalSecondaryColor = secondaryColor || scheme.secondary;
   // Use baseWord if provided, otherwise use text
   const actualBaseWord = baseWord || text;
   
@@ -181,8 +206,11 @@ export default function GlitchText({
   const redTextX = useSharedValue(rectX);
   const greenTextX = useSharedValue(rectX);
 
-  const withAnimation = (offsets: number[]) => {
-    const animations = offsets.map((offset) => withTiming(rectX + offset, { duration: animationSpeed }));
+  const withAnimation = (offsets: number[], isReversed: boolean = false) => {
+    const animations = offsets.map((offset) => {
+      const finalOffset = isReversed ? -offset : offset;
+      return withTiming(rectX + finalOffset, { duration: animationSpeed });
+    });
     animations.push(withTiming(rectX, { duration: animationSpeed }));
     return withSequence(...animations);
   };
@@ -195,13 +223,16 @@ export default function GlitchText({
       onAnimationStart();
     }
     
+    // Determine if this is the reversed animation (second interval)
+    const isReversed = !isShowingBaseWord;
+    
     // Start the glitch animation
-    topHalfX.value = withAnimation([-8, -6, -4, 5]);
-    middleHalfX.value = withAnimation([-6, -4, 5, -2]);
-    bottomHalfX.value = withAnimation([-4, 5, -2, 2]);
+    topHalfX.value = withAnimation([-8, -6, -4, 5], isReversed);
+    middleHalfX.value = withAnimation([-6, -4, 5, -2], isReversed);
+    bottomHalfX.value = withAnimation([-4, 5, -2, 2], isReversed);
 
-    redTextX.value = withAnimation([-2, 5, -4, -6]);
-    greenTextX.value = withAnimation([2, -2, 5, -4]);
+    redTextX.value = withAnimation([-2, 5, -4, -6], isReversed);
+    greenTextX.value = withAnimation([2, -2, 5, -4], isReversed);
 
     // Change text halfway through the animation
     setTimeout(() => {
@@ -273,8 +304,8 @@ export default function GlitchText({
   return (
     <View style={[{ width: '100%', overflow: 'hidden' }, style]}>
       <Canvas style={{ width: canvasWidth, height: canvasHeight }}>
-        <Text color={primaryColor} font={font} text={currentText} x={redTextX} y={textY} opacity={0.6} />
-        <Text color={secondaryColor} font={font} text={currentText} x={greenTextX} y={textY} opacity={0.6} />
+        <Text color={finalPrimaryColor} font={font} text={currentText} x={redTextX} y={textY} opacity={0.6} />
+        <Text color={finalSecondaryColor} font={font} text={currentText} x={greenTextX} y={textY} opacity={0.6} />
         {renderText(topHalfX, topRectY)}
         {renderText(middleHalfX, middleRectY)}
         {renderText(bottomHalfX, bottomRectY, fullRectHeight)}

@@ -135,8 +135,23 @@ function AppContent() {
     if (destination === 'self-destruct') {
       // Reset all game state
       setGameState('welcome');
+    } else if (destination === 'home') {
+      setGameState('home');
     } else {
       setGameState(destination);
+    }
+  };
+
+  // Function to determine the correct "back" destination for modules
+  const getBackDestination = (moduleName: string): string => {
+    switch (moduleName) {
+      case 'battery':
+      case 'wifi':
+      case 'about':
+      case 'core-vitals':
+        return 'system'; // Go back to system module
+      default:
+        return 'home'; // Default to home for other modules
     }
   };
 
@@ -207,6 +222,8 @@ function AppContent() {
           onGoToAbout={() => navigate('about')}
           onGoToCoreVitals={() => navigate('core-vitals')}
           onSelfDestruct={() => navigate('self-destruct')}
+          onGoToBattery={() => navigate('battery')}
+          onGoToWifi={() => navigate('wifi')}
         />         
       </View>
     );
@@ -217,7 +234,7 @@ function AppContent() {
     const ModuleComponent = MODULE_COMPONENTS[gameState as keyof typeof MODULE_COMPONENTS];
     return (
       <View className="flex-1">
-        <ModuleComponent onGoHome={() => navigate('home')} />
+        <ModuleComponent onGoHome={() => navigate(getBackDestination(gameState))} />
       </View>
     );
   }

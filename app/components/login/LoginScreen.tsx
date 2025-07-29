@@ -112,7 +112,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 fontSize={35}
                 width={300}
                 height={56}
-                animationSpeed={50}
+                animationSpeed={60}
                 animationInterval={1250}
                 animationInterval2={1250}
                 primaryColor="#E5484D"
@@ -121,10 +121,10 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 opacity={0.9}
                 textAlign="center"
                 baseWord="CORE"
-                wordList={['SYSTEM']}
+                wordList={['CORE']}
                 wordColors={{
                   'CORE': 'white',
-                  'SYSTEM': 'white',
+                  ' CORE': 'white',
                 }}
                 onAnimationStart={() => setIsGlitching(true)}
                 onAnimationEnd={() => setIsGlitching(false)}
@@ -135,7 +135,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 fontSize={35}
                 width={300}
                 height={56}
-                animationSpeed={50}
+                animationSpeed={60}
                 animationInterval={1190}
                 animationInterval2={60}
                 primaryColor="#E5484D"
@@ -144,11 +144,12 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 opacity={0.9}
                 textAlign="center"
                 baseWord="DEFENDER"
-                wordList={['PROTOCOL', 'GUARDIAN']}
+                wordList={['INFECTED', 'CORRUPTD']}
                 wordColors={{
                   'DEFENDER': 'white',
-                  'PROTOCOL': '#4ECDC4',
-                  'GUARDIAN': '#45B7D1',
+                  'INFECTED': 'red',
+                  'CORRUPTD': 'red',
+                  'DEGRADED': 'red',
                 }}
                 onAnimationStart={() => setIsGlitching(true)}
                 onAnimationEnd={() => setIsGlitching(false)}
