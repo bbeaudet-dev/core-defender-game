@@ -26,17 +26,18 @@ export default function AnimatedBackground({
 }: AnimatedBackgroundProps) {
   const screenHeight = Dimensions.get('window').height;
 
+  // Always call the hook, but only use it when isVideo is true
+  const player = useVideoPlayer(source, player => {
+    if (player && isVideo) {
+      player.loop = shouldLoop;
+      if (shouldPlay) {
+        player.play();
+      }
+    }
+  });
+
   // For video: simple video display
   if (isVideo) {
-    const player = useVideoPlayer(source, player => {
-      if (player) {
-        player.loop = shouldLoop;
-        if (shouldPlay) {
-          player.play();
-        }
-      }
-    });
-
     return (
       <View style={[{ flex: 1, backgroundColor: 'black', height: screenHeight }, style]}>
         <VideoView

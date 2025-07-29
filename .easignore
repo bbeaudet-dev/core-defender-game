@@ -1,0 +1,34 @@
+# Exclude unnecessary files from EAS builds
+node_modules/
+.git/
+.expo/
+dist/
+docs/
+*.log
+.DS_Store
+*.md
+.vscode/
+*.tsbuildinfo
+
+# Exclude Lottie files (we removed Lottie dependencies)
+assets/animations/*.json
+assets/animations/*.lottie
+
+# Exclude large development files
+assets/animations/*.mov
+assets/animations/ScreenRecording_*.mov
+assets/animations/Core Defender Demon.mov
+
+# Exclude large GIF files (too big for mobile)
+assets/animations/*.gif
+
+# Exclude old video versions (keep only HEV3)
+assets/animations/Compromised_animation_HEV.mp4
+assets/animations/Compromised_animation_HEV2.mp4
+
+# Exclude old MP4 versions of GIFs
+assets/animations/red_eye_anim*.mp4
+assets/animations/glowing_green_bg_grid.mp4
+
+# Keep only the required video file
+# assets/animations/Compromised_animation_HEV3.mp4 
