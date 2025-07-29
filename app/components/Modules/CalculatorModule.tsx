@@ -4,6 +4,7 @@ import { usePuzzle } from '../../contexts/PuzzleContext';
 import { getModuleBackgroundImage } from '../../data/modules';
 import { playSound } from '../../utils/soundManager';
 import ScreenTemplate from '../ui/ScreenTemplate';
+import { TYPOGRAPHY } from '../../data/fonts';
 
 interface CalculatorModuleProps {
   onGoHome: () => void;
@@ -102,7 +103,7 @@ export default function CalculatorModule({ onGoHome }: CalculatorModuleProps) {
       }}
       className={`flex-1 aspect-square justify-center items-center rounded-lg m-1 ${className}`}
     >
-      <Text className="text-white text-xl font-mono">{text}</Text>
+      <Text className={`text-white ${TYPOGRAPHY.H3}`}>{text}</Text>
     </TouchableOpacity>
   );
 
@@ -116,9 +117,9 @@ export default function CalculatorModule({ onGoHome }: CalculatorModuleProps) {
       <View className="flex flex-col space-y-4">
         {/* Calculator Display */}
         <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-2">CALCULATOR</Text>
+          <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-2`}>CALCULATOR</Text>
           <View className="bg-gray-800 p-4 rounded-lg mb-4">
-            <Text className="text-green-400 text-3xl font-mono text-right">
+            <Text className={`text-green-400 ${TYPOGRAPHY.H1} text-right`}>
               {display}
             </Text>
           </View>
@@ -126,7 +127,7 @@ export default function CalculatorModule({ onGoHome }: CalculatorModuleProps) {
           {/* Puzzle Status */}
           {puzzleComplete && (
             <View className="mt-4 p-3 bg-green-900 rounded-lg">
-              <Text className="text-green-400 text-center font-mono text-sm">
+              <Text className={`text-green-400 text-center ${TYPOGRAPHY.BODY_SMALL}`}>
                 ✅ MATHEMATICAL VERIFICATION COMPLETE
               </Text>
             </View>
@@ -136,8 +137,8 @@ export default function CalculatorModule({ onGoHome }: CalculatorModuleProps) {
         {/* Puzzle Instructions */}
         {!puzzleComplete && (
           <View className="bg-gray-900 p-6 rounded-lg">
-            <Text className="text-gray-400 text-sm font-mono mb-2">PUZZLE INSTRUCTIONS</Text>
-            <Text className="text-green-400 text-sm font-mono mb-2">
+            <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-2`}>PUZZLE INSTRUCTIONS</Text>
+            <Text className={`text-green-400 ${TYPOGRAPHY.BODY_SMALL} mb-2`}>
               Solve: {PUZZLE_PROBLEM} = ?
             </Text>
           </View>
@@ -145,7 +146,7 @@ export default function CalculatorModule({ onGoHome }: CalculatorModuleProps) {
 
         {/* Calculator Buttons */}
         <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-4">CALCULATOR</Text>
+          <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-4`}>CALCULATOR</Text>
           
           {/* Row 1 */}
           <View className="flex-row">

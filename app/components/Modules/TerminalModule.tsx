@@ -5,6 +5,7 @@ import { usePuzzle } from '../../contexts/PuzzleContext';
 import { getModuleBackgroundImage } from '../../data/modules';
 import { playSound } from '../../utils/soundManager';
 import ScreenTemplate from '../ui/ScreenTemplate';
+import { TYPOGRAPHY, FONTS } from '../../data/fonts';
 
 interface TerminalModuleProps {
   onGoHome: () => void;
@@ -241,42 +242,43 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
       >
         {history.map((item, index) => (
           <View key={index} className="mb-2">
-            <Text className="text-gray-500 text-xs font-mono mb-1">
+            <Text className="text-gray-500 text-xs mb-1" style={{ fontFamily: FONTS.TERMINAL }}>
               [{formatTimestamp(item.timestamp)}]
             </Text>
-            <Text className="text-green-400 text-sm font-mono">$ {item.command}</Text>
-            <Text className={`text-sm font-mono ${getColorClass(item.color)}`}>
+            <Text className="text-green-400 text-sm" style={{ fontFamily: FONTS.TERMINAL }}>$ {item.command}</Text>
+            <Text className={`text-sm ${getColorClass(item.color)}`} style={{ fontFamily: FONTS.TERMINAL }}>
               {item.output}
             </Text>
           </View>
         ))}
-        <Text className="text-green-400 text-sm font-mono">$ </Text>
+        <Text className="text-green-400 text-sm" style={{ fontFamily: FONTS.TERMINAL }}>$ </Text>
       </ScrollView>
 
       {/* Input Section */}
       <View className="flex-row items-center bg-gray-900 rounded-lg p-2">
-        <Text className="text-green-400 text-sm font-mono mr-2">$</Text>
+        <Text className="text-green-400 text-sm mr-2" style={{ fontFamily: FONTS.TERMINAL }}>$</Text>
         <TextInput
           value={input}
           onChangeText={setInput}
           onSubmitEditing={handleSubmit}
-          className="flex-1 text-green-400 text-sm font-mono"
+          className="flex-1 text-green-400 text-sm"
           placeholder="Enter command..."
           placeholderTextColor="#6b7280"
           autoCapitalize="none"
           autoCorrect={false}
+          style={{ fontFamily: FONTS.TERMINAL }}
         />
         <TouchableOpacity
           onPress={handleSubmit}
           className="bg-green-600 px-3 py-1 rounded"
         >
-          <Text className="text-white text-sm font-mono">EXEC</Text>
+          <Text className="text-white text-sm" style={{ fontFamily: FONTS.TERMINAL }}>EXEC</Text>
         </TouchableOpacity>
       </View>
 
       {/* Quick Commands */}
       <View className="mt-4">
-        <Text className="text-gray-400 text-xs font-mono mb-2">QUICK COMMANDS:</Text>
+        <Text className="text-gray-400 text-xs mb-2" style={{ fontFamily: FONTS.TERMINAL }}>QUICK COMMANDS:</Text>
         <View className="flex-row flex-wrap">
           {['help', 'status', 'inspect', 'clear'].map(cmd => (
             <TouchableOpacity
@@ -284,7 +286,7 @@ export default function TerminalModule({ onGoHome }: TerminalModuleProps) {
               onPress={() => executeCommand(cmd)}
               className="bg-gray-800 px-3 py-1 rounded mr-2 mb-2"
             >
-              <Text className="text-green-400 text-xs font-mono">{cmd}</Text>
+              <Text className="text-green-400 text-xs" style={{ fontFamily: FONTS.TERMINAL }}>{cmd}</Text>
             </TouchableOpacity>
           ))}
         </View>

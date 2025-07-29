@@ -405,15 +405,14 @@ This document outlines the comprehensive cleanup and improvements needed to make
 - [ ] Clean up and rename components
 
 ### Medium Priority (User Experience)
-- [ ] Standardize fonts
+- [X] Standardize fonts
 - [ ] Improve headers and layouts
 - [ ] Improve calculator functionality
 - [ ] Fix microphone layout
 - [ ] Restructure system app
-- [ ] Centralize and standardize data
+- [X] Centralize and standardize data
 
 ### Low Priority (Polish)
-- [ ] Rename Tutorial to About
 - [ ] Clean up sound effects
 - [ ] Enhance music module
 - [ ] Clean up terminal

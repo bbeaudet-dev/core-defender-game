@@ -106,12 +106,12 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               justifyContent: 'center',
             }}>
               <GlitchText 
-                text="CORE_DEFENDER"
+                text="CORE DEFENDER"
                 fontSize={32}
                 width={300}
                 height={80}
-                animationSpeed={100}
-                animationInterval={3000}
+                animationSpeed={150}
+                animationInterval={2000}
                 primaryColor="#E5484D"
                 secondaryColor="#12A594"
                 baseColor="white"

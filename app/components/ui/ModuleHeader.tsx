@@ -1,3 +1,4 @@
+import { FONTS } from '../../data/fonts';
 import GlitchText from './GlitchText';
 
 const colorMap: Record<string, string> = {
@@ -39,6 +40,7 @@ export default function ModuleHeader({ name, color }: { name: string, color: str
       baseColor={colors.base}
       opacity={1}
       textAlign="left"
+      fontFamily={FONTS.PRIMARY}
     />
   );
 } 

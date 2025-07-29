@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { TYPOGRAPHY } from '../../data/fonts';
 import { playSound } from '../../utils/soundManager';
 import AnimatedBackground from '../ui/AnimatedBackground';
 
@@ -178,7 +179,7 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
         {/* Game Menu Section */}
         <View className="items-center">
           <View className="items-center mb-8">
-            <Text style={{ fontFamily: 'OCR-A' }} className="text-4xl font-bold text-green-400 mb-2 pt-10">CORE DEFENDER</Text>
+            <Text className={`${TYPOGRAPHY.TITLE} text-green-400 mb-2 pt-10`}>CORE DEFENDER</Text>
             <Text className="text-lg text-gray-400">Defend the Digital Realm</Text>
           </View>
           

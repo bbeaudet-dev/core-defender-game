@@ -1,7 +1,8 @@
 import { Canvas, FontStyle, Group, Mask, Rect, Skia, Text } from '@shopify/react-native-skia';
 import { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Text as RNText, View } from 'react-native';
 import { SharedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import { FONTS } from '../../data/fonts';
 
 interface GlitchTextProps {
   text?: string;
@@ -30,12 +31,17 @@ export default function GlitchText({
   secondaryColor = '#12A594',
   baseColor = 'white',
   opacity = 0.9,
-  fontFamily,
+  fontFamily = FONTS.GLITCH,
   style,
   textAlign
 }: GlitchTextProps) {
   const [currentText, setCurrentText] = useState(text);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  console.log('🎨 GlitchText component mounted with text:', text);
+
+  // Debug logging
+  console.log('GlitchText render:', { text, fontSize, width: propWidth, height: propHeight, fontFamily });
 
   // Use provided dimensions or default to screen dimensions
   const canvasWidth = propWidth || 400;
@@ -45,29 +51,54 @@ export default function GlitchText({
 
   // Try to use the specified font family first, then fall back to system fonts
   let typeface = null;
+  
+  // Try the specified font family
   if (fontFamily) {
     typeface = fontMgr.matchFamilyStyle(fontFamily, FontStyle.Normal);
+    console.log('Trying font family:', fontFamily, 'Success:', !!typeface);
   }
   
-  // Fallback to common font families if specified font not found
+  // Fallback to specific Orbitron variants that are definitely available
   if (!typeface) {
-    typeface = fontMgr.matchFamilyStyle('Times New Roman', FontStyle.Normal);
+    typeface = fontMgr.matchFamilyStyle('Orbitron-Regular', FontStyle.Normal);
+    console.log('Trying Orbitron-Regular, Success:', !!typeface);
   }
   if (!typeface) {
-    typeface = fontMgr.matchFamilyStyle('Times', FontStyle.Normal);
+    typeface = fontMgr.matchFamilyStyle('Orbitron-Bold', FontStyle.Normal);
+    console.log('Trying Orbitron-Bold, Success:', !!typeface);
+  }
+  if (!typeface) {
+    typeface = fontMgr.matchFamilyStyle('Orbitron-Medium', FontStyle.Normal);
+    console.log('Trying Orbitron-Medium, Success:', !!typeface);
+  }
+  if (!typeface) {
+    typeface = fontMgr.matchFamilyStyle('Orbitron', FontStyle.Normal);
+    console.log('Trying Orbitron, Success:', !!typeface);
+  }
+  if (!typeface) {
+    typeface = fontMgr.matchFamilyStyle('OCR-A', FontStyle.Normal);
+    console.log('Trying OCR-A, Success:', !!typeface);
+  }
+  if (!typeface) {
+    typeface = fontMgr.matchFamilyStyle('SpaceMono', FontStyle.Normal);
+    console.log('Trying SpaceMono, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Arial', FontStyle.Normal);
+    console.log('Trying Arial, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('Helvetica', FontStyle.Normal);
+    console.log('Trying Helvetica, Success:', !!typeface);
   }
   if (!typeface) {
     typeface = fontMgr.matchFamilyStyle('System', FontStyle.Normal);
+    console.log('Trying System, Success:', !!typeface);
   }
   if (!typeface) {
-    // Fallback to default
+    // Final fallback to default
     typeface = fontMgr.matchFamilyStyle('', FontStyle.Normal);
+    console.log('Trying default font, Success:', !!typeface);
   }
 
   const font = Skia.Font(typeface, fontSize);
@@ -75,6 +106,8 @@ export default function GlitchText({
 
   const textHeight = font.measureText(currentText).height;
   const textWidth = font.measureText(currentText).width;
+
+  console.log('🎯 Final font loaded:', !!typeface, 'Text measurements:', textHeight, textWidth);
 
   // Calculate text position based on alignment
   let textX: number;
@@ -129,6 +162,7 @@ export default function GlitchText({
   };
 
   const triggerAnimation = useCallback(() => {
+    console.log('🔥 Glitch animation triggered');
     setIsAnimating(true);
     
     // Start the glitch animation
@@ -142,10 +176,12 @@ export default function GlitchText({
     // Reset animation state
     setTimeout(() => {
       setIsAnimating(false);
+      console.log('✅ Animation completed');
     }, animationSpeed * 4);
   }, [animationSpeed, rectX]);
 
   useEffect(() => {
+    console.log('🎬 Setting up glitch animation interval:', animationInterval);
     const interval = setInterval(() => {
       triggerAnimation();
     }, animationInterval);
@@ -158,15 +194,29 @@ export default function GlitchText({
     const fallbackFont = Skia.Font(fallbackTypeface, fontSize);
     
     return (
-      <Canvas style={{ width: canvasWidth, height: canvasHeight }}>
-        <Text
-          x={textX}
-          y={textY}
-          text={currentText}
-          color={baseColor}
-          font={fallbackFont}
-        />
-      </Canvas>
+      <View style={[{ width: canvasWidth, height: canvasHeight, justifyContent: 'center', alignItems: 'center' }, style]}>
+        <Canvas style={{ width: canvasWidth, height: canvasHeight }}>
+          <Text
+            x={textX}
+            y={textY}
+            text={currentText}
+            color={baseColor}
+            font={fallbackFont}
+          />
+        </Canvas>
+        {/* Fallback text in case Skia fails completely */}
+        <View style={{ position: 'absolute', justifyContent: 'center', alignItems: 'center' }}>
+          <RNText style={{ 
+            color: baseColor, 
+            fontSize: fontSize, 
+            fontFamily: fontFamily,
+            textAlign: textAlign || 'center',
+            opacity: opacity
+          }}>
+            {currentText}
+          </RNText>
+        </View>
+      </View>
     );
   }
 
