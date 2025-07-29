@@ -1,5 +1,5 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { usePuzzle } from '../../../../contexts/PuzzleContext';
 import { FONTS } from '../../../../data/fonts';
 import { getModuleBackgroundImage } from '../../../../data/modules';
@@ -11,13 +11,17 @@ interface SystemModuleProps {
   onGoToAbout: () => void;
   onGoToCoreVitals: () => void;
   onSelfDestruct: () => void;
+  onGoToBattery: () => void;
+  onGoToWifi: () => void;
 }
 
 export default function SystemModule({ 
   onGoHome, 
   onGoToAbout, 
   onGoToCoreVitals, 
-  onSelfDestruct 
+  onSelfDestruct,
+  onGoToBattery,
+  onGoToWifi
 }: SystemModuleProps) {
   const { completePuzzle, puzzleState, getCompletedPuzzles } = usePuzzle();
   const [securityCode, setSecurityCode] = useState('');
@@ -173,6 +177,16 @@ export default function SystemModule({
         {/* Hardware Section */}
         <View className="mb-6">
           <Text style={{ fontFamily: FONTS.MONO }} className="text-red-500 text-lg font-bold mb-3">HARDWARE</Text>
+          
+          <TouchableOpacity className="flex-row justify-between items-center py-3 border-b border-gray-700" onPress={onGoToBattery}>
+            <Text style={{ fontFamily: FONTS.MONO }} className="text-white text-base">Battery</Text>
+            <Text style={{ fontFamily: FONTS.MONO }} className="text-gray-400 text-sm">MANAGE</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="flex-row justify-between items-center py-3 border-b border-gray-700" onPress={onGoToWifi}>
+            <Text style={{ fontFamily: FONTS.MONO }} className="text-white text-base">WiFi</Text>
+            <Text style={{ fontFamily: FONTS.MONO }} className="text-gray-400 text-sm">CONFIGURE</Text>
+          </TouchableOpacity>
           
           <TouchableOpacity className="flex-row justify-between items-center py-3 border-b border-gray-700">
             <Text style={{ fontFamily: FONTS.MONO }} className="text-white text-base">Gyroscope</Text>

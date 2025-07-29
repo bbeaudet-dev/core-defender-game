@@ -15,12 +15,12 @@ export interface ModuleData {
 
 // Grid layout: 3 columns, 6 rows
 export const GRID_LAYOUT = [
-  ['tutorial', 'system', 'battery'],
+  ['tutorial', 'system', 'accelerometer'],
   ['terminal', 'clock', 'music'],
   ['flashlight', 'calculator', 'compass'],
   ['gyro', 'camera', 'microphone'],
-  ['maps', 'games', 'wifi'],
-  ['weather', 'finalboss', 'accelerometer']
+  ['maps', 'games', 'weather'],
+  [null, 'finalboss', null]
 ];
 
 // All modules data
@@ -51,20 +51,6 @@ export const ALL_MODULES: ModuleData[] = [
     category: 'system'
   },
   {
-    name: 'battery',
-    displayName: 'BATTERY',
-    icon: '🔋',
-    color: 'bg-green-600',
-    route: 'battery',
-    gridPosition: { row: 0, col: 2 },
-    puzzleId: 'battery_charge',
-    isStartingApp: false,
-    description: 'Battery status and management',
-    category: 'utility'
-  },
-
-  // Row 2
-  {
     name: 'terminal',
     displayName: 'TERMINAL',
     icon: '💻',
@@ -76,18 +62,20 @@ export const ALL_MODULES: ModuleData[] = [
     description: 'Command line interface',
     category: 'core'
   },
+
   {
     name: 'clock',
     displayName: 'CLOCK',
-    icon: '⏰',
+    icon: '🕐',
     color: 'bg-cyan-600',
     route: 'clock',
     gridPosition: { row: 1, col: 1 },
     puzzleId: 'clock_sync',
     isStartingApp: false,
-    description: 'Time and date utilities',
+    description: 'Clock and timer utilities',
     category: 'utility'
   },
+
   {
     name: 'music',
     displayName: 'MUSIC',
@@ -101,7 +89,7 @@ export const ALL_MODULES: ModuleData[] = [
     category: 'utility'
   },
 
-  // Row 3
+  // Row 2
   {
     name: 'flashlight',
     displayName: 'FLASHLIGHT',
@@ -114,18 +102,20 @@ export const ALL_MODULES: ModuleData[] = [
     description: 'Flashlight and morse code',
     category: 'utility'
   },
+
   {
     name: 'calculator',
-    displayName: 'CALCULATOR',
+    displayName: 'CALC',
     icon: '🧮',
     color: 'bg-orange-600',
     route: 'calculator',
     gridPosition: { row: 2, col: 1 },
     puzzleId: 'calculator_puzzle',
     isStartingApp: false,
-    description: 'Calculator with puzzle elements',
+    description: 'Calculator with puzzle',
     category: 'utility'
   },
+
   {
     name: 'compass',
     displayName: 'COMPASS',
@@ -139,11 +129,11 @@ export const ALL_MODULES: ModuleData[] = [
     category: 'sensor'
   },
 
-  // Row 4
+  // Row 3
   {
     name: 'gyro',
     displayName: 'GYRO',
-    icon: '🔄',
+    icon: '🌀',
     color: 'bg-green-600',
     route: 'gyro',
     gridPosition: { row: 3, col: 0 },
@@ -152,6 +142,7 @@ export const ALL_MODULES: ModuleData[] = [
     description: 'Gyroscope sensor data',
     category: 'sensor'
   },
+
   {
     name: 'camera',
     displayName: 'CAMERA',
@@ -164,9 +155,10 @@ export const ALL_MODULES: ModuleData[] = [
     description: 'Camera and photo capture',
     category: 'sensor'
   },
+
   {
     name: 'microphone',
-    displayName: 'MICROPHONE',
+    displayName: 'MIC',
     icon: '🎤',
     color: 'bg-green-600',
     route: 'microphone',
@@ -177,7 +169,7 @@ export const ALL_MODULES: ModuleData[] = [
     category: 'sensor'
   },
 
-  // Row 5
+  // Row 4
   {
     name: 'maps',
     displayName: 'MAPS',
@@ -190,6 +182,7 @@ export const ALL_MODULES: ModuleData[] = [
     description: 'Maps and navigation',
     category: 'utility'
   },
+
   {
     name: 'games',
     displayName: 'GAMES',
@@ -202,32 +195,35 @@ export const ALL_MODULES: ModuleData[] = [
     description: 'Mini-games collection',
     category: 'game'
   },
-  {
-    name: 'wifi',
-    displayName: 'WIFI',
-    icon: '📡',
-    color: 'bg-blue-600',
-    route: 'wifi',
-    gridPosition: { row: 4, col: 2 },
-    puzzleId: 'wifi_connect',
-    isStartingApp: false,
-    description: 'WiFi connection management',
-    category: 'utility'
-  },
 
-  // Row 6
   {
     name: 'weather',
     displayName: 'WEATHER',
     icon: '🌤️',
     color: 'bg-cyan-600',
     route: 'weather',
-    gridPosition: { row: 5, col: 0 },
+    gridPosition: { row: 4, col: 2 },
     puzzleId: 'weather_check',
     isStartingApp: false,
     description: 'Weather information',
     category: 'utility'
   },
+
+  // Row 0 - accelerometer moved here
+  {
+    name: 'accelerometer',
+    displayName: 'ACCELERATE',
+    icon: '⏫',
+    color: 'bg-purple-600',
+    route: 'accelerometer',
+    gridPosition: { row: 0, col: 2 },
+    puzzleId: 'accelerometer_movement',
+    isStartingApp: false,
+    description: 'Accelerometer sensor data',
+    category: 'sensor'
+  },
+
+  // Row 6
   {
     name: 'finalboss',
     displayName: 'CORE',
@@ -239,18 +235,6 @@ export const ALL_MODULES: ModuleData[] = [
     isStartingApp: false,
     description: 'Final challenge',
     category: 'game'
-  },
-  {
-    name: 'accelerometer',
-    displayName: 'ACCELERATE',
-    icon: '⏫',
-    color: 'bg-purple-600',
-    route: 'accelerometer',
-    gridPosition: { row: 5, col: 2 },
-    puzzleId: 'accelerometer_movement',
-    isStartingApp: false,
-    description: 'Accelerometer sensor data',
-    category: 'sensor'
   }
 ];
 
