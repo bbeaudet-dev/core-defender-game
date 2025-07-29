@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { usePuzzle } from '../../contexts/PuzzleContext';
 import { getModuleBackgroundImage } from '../../data/modules';
+import { GAME_CONFIG } from '../../lib/config';
 import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface BatteryModuleProps {
@@ -21,7 +22,12 @@ export default function BatteryModule({ onGoHome }: BatteryModuleProps) {
   const backgroundImage = getModuleBackgroundImage('battery', completedPuzzles, false);
 
   // Battery level threshold to unlock puzzle
-  const UNLOCK_THRESHOLD = 0.5; // 50%
+  const UNLOCK_THRESHOLD = GAME_CONFIG.BATTERY_UNLOCK_THRESHOLD; // Use shared constant
+
+  // Check if puzzle should be completed based on battery level OR charging status
+  const shouldCompletePuzzle = (level: number, charging: boolean) => {
+    return (level >= UNLOCK_THRESHOLD || charging) && !puzzleComplete;
+  };
 
   useEffect(() => {
     const checkBatteryAvailability = async () => {
@@ -40,7 +46,7 @@ export default function BatteryModule({ onGoHome }: BatteryModuleProps) {
           setIsLowPowerMode(isLowPowerMode);
           
           // Check if puzzle should be completed
-          if (batteryLevel >= UNLOCK_THRESHOLD && !puzzleComplete) {
+          if (shouldCompletePuzzle(batteryLevel, batteryState === Battery.BatteryState.CHARGING)) {
             setPuzzleComplete(true);
             completePuzzle('battery_charge');
           }
@@ -50,14 +56,21 @@ export default function BatteryModule({ onGoHome }: BatteryModuleProps) {
             setBatteryLevel(batteryLevel);
             
             // Check if puzzle should be completed
-            if (batteryLevel >= UNLOCK_THRESHOLD && !puzzleComplete) {
+            if (shouldCompletePuzzle(batteryLevel, isCharging || false)) {
               setPuzzleComplete(true);
               completePuzzle('battery_charge');
             }
           });
           
           const batteryStateSubscription = Battery.addBatteryStateListener(({ batteryState }) => {
-            setIsCharging(batteryState === Battery.BatteryState.CHARGING);
+            const charging = batteryState === Battery.BatteryState.CHARGING;
+            setIsCharging(charging);
+            
+            // Check if puzzle should be completed when charging status changes
+            if (shouldCompletePuzzle(batteryLevel || 0, charging)) {
+              setPuzzleComplete(true);
+              completePuzzle('battery_charge');
+            }
           });
           
           const lowPowerSubscription = Battery.addLowPowerModeListener(({ lowPowerMode }) => {

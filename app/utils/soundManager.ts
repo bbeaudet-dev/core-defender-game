@@ -1,9 +1,9 @@
 import {
-  AudioPlayer,
-  createAudioPlayer,
-  InterruptionMode,
-  InterruptionModeAndroid,
-  setAudioModeAsync
+    AudioPlayer,
+    createAudioPlayer,
+    InterruptionMode,
+    InterruptionModeAndroid,
+    setAudioModeAsync
 } from 'expo-audio'
 
 // Import sound effects from separate files
@@ -92,10 +92,24 @@ export class SoundManager {
   async playBackgroundMusic(trackId: string, source: string | any, loop: boolean = true): Promise<void> {
     if (this.isMuted) return
 
-    // Stop current background music
+    // Prevent starting the same track multiple times
+    if (this.currentMusicTrack === trackId && this.backgroundMusic?.playing) {
+      console.log(`🎵 Track ${trackId} is already playing, skipping`);
+      return;
+    }
+
+    console.log(`🎵 Starting background music: ${trackId}`);
+
+    // Stop current background music and wait for it to complete
     if (this.backgroundMusic) {
+      console.log(`🎵 Stopping current background music: ${this.currentMusicTrack}`);
       this.backgroundMusic.pause()
       this.backgroundMusic.remove()
+      this.backgroundMusic = null
+      this.currentMusicTrack = null
+      
+      // Small delay to ensure cleanup is complete
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     try {
@@ -106,9 +120,14 @@ export class SoundManager {
       if (loop) {
         player.loop = true
       }
+      
+      // Wait for player to be ready before playing
+      await new Promise(resolve => setTimeout(resolve, 50));
       player.play()
+      
       this.backgroundMusic = player
       this.currentMusicTrack = trackId
+      console.log(`🎵 Background music started successfully: ${trackId}`);
     } catch (error) {
       console.error(`Failed to play background music ${trackId}:`, error)
     }
@@ -116,10 +135,12 @@ export class SoundManager {
 
   async stopBackgroundMusic(): Promise<void> {
     if (this.backgroundMusic) {
+      console.log(`🎵 Stopping background music: ${this.currentMusicTrack}`);
       this.backgroundMusic.pause()
       this.backgroundMusic.remove()
       this.backgroundMusic = null
       this.currentMusicTrack = null
+      console.log(`🎵 Background music stopped successfully`);
     }
   }
 

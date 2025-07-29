@@ -5,7 +5,7 @@ import { usePuzzle } from '../../contexts/PuzzleContext';
 import { ALL_MODULES, isModulePuzzleCompleted, shouldModuleBeUnlocked } from '../../data/modules';
 import { HomeScreenProps } from '../../types/game';
 import { AppStatus } from '../../types/modules';
-import { playBackgroundMusic } from '../../utils/soundManager';
+import { playBackgroundMusic, SoundManager } from '../../utils/soundManager';
 import AppIconWithHalo from '../ui/AppIconWithHalo';
 import ScreenTemplate from '../ui/ScreenTemplate';
 import InfectionProgressBar from './InfectionProgressBar';
@@ -71,8 +71,12 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
 
   // Start main menu theme when component mounts
   useEffect(() => {
-    // Play the main menu theme
-    playBackgroundMusic('cyberpunk_bass_1', require('../../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
+    // Only start background music if no music is currently playing
+    // This prevents conflicts with the music module
+    const soundManager = SoundManager.getInstance();
+    if (!soundManager.isBackgroundMusicPlaying()) {
+      playBackgroundMusic('cyberpunk_bass_1', require('../../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
+    }
   }, []);
 
   const handleAppPress = (moduleName: string) => {

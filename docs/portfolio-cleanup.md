@@ -445,3 +445,12 @@ This document outlines the comprehensive cleanup and improvements needed to make
 ## More to add
 
 - Fix live data plots
+- Music doubles when looping
+- App icons to locks
+- Separate About / System
+- New progression system: 
+    - rows appear after certain amount of modules done
+    - Core is defeated in phases throughout the game, not just at the end!
+    - Remove 2 apps, make core take up whole bottom row
+        - move Wifi and battery to system
+- Favicon and splash screen (plus clean up unused stuff)

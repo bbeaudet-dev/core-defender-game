@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Text, View } from 'react-native'
 import { usePuzzle } from '../../../contexts/PuzzleContext'
 import { getModuleBackgroundImage } from '../../../data/modules'
-import { SOUND_EFFECTS, SoundManager, pauseBackgroundMusic, playBackgroundMusic, playSound, resumeBackgroundMusic, setSoundMuted, setSoundVolume } from '../../../utils/soundManager'
+import { SOUND_EFFECTS, SoundManager, pauseBackgroundMusic, playBackgroundMusic, playSound, resumeBackgroundMusic, setSoundMuted, setSoundVolume, stopBackgroundMusic } from '../../../utils/soundManager'
 import ScreenTemplate from '../../ui/ScreenTemplate'
 import AudioControls from './AudioControls'
 import MusicTracks from './MusicTracks'
@@ -53,6 +53,12 @@ export default function MusicModule({ onGoHome }: MusicModuleProps) {
     if (completedPuzzles.includes('music_play')) {
       setPuzzleComplete(true);
     }
+
+    // Cleanup function to stop background music when component unmounts
+    return () => {
+      // Don't stop background music on unmount if it was playing before we started
+      // This allows the music to continue playing when leaving the module
+    }
   }, [completedPuzzles]);
 
   const handleMuteToggle = () => {
@@ -74,7 +80,8 @@ export default function MusicModule({ onGoHome }: MusicModuleProps) {
     // Find the actual track data to play the music
     const trackData = musicTracks.find(track => track.name === trackName);
     if (trackData) {
-      // Play the background music with the track file
+      // Stop any existing background music first, then play the new track
+      stopBackgroundMusic();
       playBackgroundMusic(trackName, trackData.file, true);
     }
     
@@ -89,6 +96,8 @@ export default function MusicModule({ onGoHome }: MusicModuleProps) {
     setIsPlaying(false);
     setCurrentTrack(null);
     playSound('click');
+    // Actually stop the background music
+    stopBackgroundMusic();
   }
 
   const handlePauseResume = async () => {

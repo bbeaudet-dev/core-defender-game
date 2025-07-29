@@ -11,6 +11,7 @@ interface GlitchTextProps {
   height?: number;
   animationSpeed?: number;
   animationInterval?: number;
+  animationInterval2?: number;
   primaryColor?: string;
   secondaryColor?: string;
   baseColor?: string;
@@ -18,6 +19,11 @@ interface GlitchTextProps {
   fontFamily?: string;
   style?: any;
   textAlign?: 'left' | 'center' | 'right';
+  wordList?: string[];
+  baseWord?: string;
+  wordColors?: { [key: string]: string };
+  onAnimationStart?: () => void;
+  onAnimationEnd?: () => void;
 }
 
 export default function GlitchText({
@@ -27,16 +33,54 @@ export default function GlitchText({
   height: propHeight,
   animationSpeed = 100,
   animationInterval = 1800,
+  animationInterval2 = 800,
   primaryColor = '#E5484D',
   secondaryColor = '#12A594',
   baseColor = 'white',
   opacity = 0.9,
   fontFamily = FONTS.GLITCH,
   style,
-  textAlign
+  textAlign,
+  wordList,
+  baseWord,
+  wordColors,
+  onAnimationStart,
+  onAnimationEnd
 }: GlitchTextProps) {
-  const [currentText, setCurrentText] = useState(text);
+  // Use baseWord if provided, otherwise use text
+  const actualBaseWord = baseWord || text;
+  
+  const [currentText, setCurrentText] = useState(actualBaseWord);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isShowingBaseWord, setIsShowingBaseWord] = useState(true);
+
+  // Function to get next word from list
+  const getNextWord = useCallback(() => {
+    if (wordList && wordList.length > 0) {
+      const nextIndex = (currentWordIndex + 1) % wordList.length;
+      setCurrentWordIndex(nextIndex);
+      return wordList[nextIndex];
+    }
+    return text;
+  }, [wordList, currentWordIndex, text]);
+
+  // Function to get current word color
+  const getCurrentWordColor = useCallback(() => {
+    if (wordColors && currentText && wordColors[currentText]) {
+      return wordColors[currentText];
+    }
+    return baseColor;
+  }, [wordColors, currentText, baseColor]);
+
+  // Calculate the longest word for consistent centering
+  const getLongestWord = useCallback(() => {
+    if (wordList && wordList.length > 0) {
+      return wordList.reduce((longest, current) => 
+        current.length > longest.length ? current : longest, wordList[0]);
+    }
+    return text;
+  }, [wordList, text]);
 
   // Use provided dimensions or default to screen dimensions
   const canvasWidth = propWidth || 400;
@@ -127,7 +171,7 @@ export default function GlitchText({
     maskHeight: number = rectHeight,
   ) => (
     <Mask mode="luminance" mask={renderMask(rectXSv, rectY, maskHeight)}>
-      <Text color={baseColor} font={font} text={currentText} x={rectXSv} y={textY} opacity={opacity} />
+      <Text color={getCurrentWordColor()} font={font} text={currentText} x={rectXSv} y={textY} opacity={opacity} />
     </Mask>
   );
 
@@ -146,6 +190,11 @@ export default function GlitchText({
   const triggerAnimation = useCallback(() => {
     setIsAnimating(true);
     
+    // Call animation start callback for background effects
+    if (onAnimationStart) {
+      onAnimationStart();
+    }
+    
     // Start the glitch animation
     topHalfX.value = withAnimation([-8, -6, -4, 5]);
     middleHalfX.value = withAnimation([-6, -4, 5, -2]);
@@ -154,18 +203,41 @@ export default function GlitchText({
     redTextX.value = withAnimation([-2, 5, -4, -6]);
     greenTextX.value = withAnimation([2, -2, 5, -4]);
 
+    // Change text halfway through the animation
+    setTimeout(() => {
+      if (wordList && wordList.length > 0) {
+        if (isShowingBaseWord) {
+          // Switch to list word
+          setCurrentText(getNextWord());
+          setIsShowingBaseWord(false);
+        } else {
+          // Switch back to base word
+          setCurrentText(actualBaseWord);
+          setIsShowingBaseWord(true);
+        }
+      } else {
+        // For single words, just toggle the state to create 2-phase effect
+        setIsShowingBaseWord(!isShowingBaseWord);
+      }
+    }, animationSpeed * 2);
+
     // Reset animation state
     setTimeout(() => {
       setIsAnimating(false);
+      if (onAnimationEnd) {
+        onAnimationEnd();
+      }
     }, animationSpeed * 4);
-  }, [animationSpeed, rectX]);
+  }, [animationSpeed, rectX, wordList, getNextWord, onAnimationStart, onAnimationEnd, isShowingBaseWord, actualBaseWord]);
 
   useEffect(() => {
+    // Use both intervals for 2-phase animation
+    const currentInterval = isShowingBaseWord ? animationInterval : animationInterval2;
     const interval = setInterval(() => {
       triggerAnimation();
-    }, animationInterval);
+    }, currentInterval);
     return () => clearInterval(interval);
-  }, [triggerAnimation, animationInterval]);
+  }, [triggerAnimation, animationInterval, animationInterval2, isShowingBaseWord]);
 
   if (!typeface || textHeight === 0 || textWidth === 0) {
     const fallbackTypeface = fontMgr.matchFamilyStyle('', FontStyle.Normal);
