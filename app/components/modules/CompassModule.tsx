@@ -210,7 +210,7 @@ export default function CompassModule({ onGoHome }: CompassModuleProps) {
       >
         <View className="flex-1 justify-center items-center p-5">
           <Text className="text-red-500 text-lg text-center mb-4">Magnetometer not available</Text>
-          <Text className="text-gray-400 text-sm text-center">This device doesn't support magnetometer sensors</Text>
+          <Text className="text-gray-400 text-sm text-center">This device doesn&apos;t support magnetometer sensors</Text>
         </View>
       </ScreenTemplate>
     );
