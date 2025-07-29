@@ -4,21 +4,30 @@ import { useAuth } from '../../contexts/AuthContext';
 import { TYPOGRAPHY } from '../../data/fonts';
 import { playSound } from '../../utils/soundManager';
 import AnimatedBackground from '../ui/AnimatedBackground';
+import SystemCompromisedAnimation from './SystemCompromisedAnimation';
 
 interface WelcomeGameScreenProps {
   type: 'signup' | 'signin' | 'guest';
   guestUsername: string;
   onDownload: () => void;
+  isVideoBuffering?: boolean;
+  isVideoPlaying?: boolean; // New prop
 }
 
-export default function WelcomeGameScreen({ type, guestUsername, onDownload }: WelcomeGameScreenProps) {
+export default function WelcomeGameScreen({ 
+  type, 
+  guestUsername, 
+  onDownload, 
+  isVideoBuffering = false,
+  isVideoPlaying = false
+}: WelcomeGameScreenProps) {
   const { user } = useAuth();
   const buttonRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const textPulseAnim = useRef(new Animated.Value(1)).current;
+  
   const [isAlarmActive, setIsAlarmActive] = useState(false);
-  const flashAnim = useRef(new Animated.Value(0)).current;
-
+  
   // Get the appropriate username based on login type
   const getUsername = () => {
     if (type === 'guest') {
@@ -33,13 +42,13 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
+          toValue: 1.15,
+          duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1000,
+          duration: 800,
           useNativeDriver: true,
         }),
       ])
@@ -48,18 +57,18 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
     return () => pulse.stop();
   }, []);
 
-  // More intense pulsing animation for the text
+  // More intense pulsing animation for the text (reduced intensity)
   useEffect(() => {
     const textPulse = Animated.loop(
       Animated.sequence([
         Animated.timing(textPulseAnim, {
-          toValue: 1.3,
-          duration: 1000,
+          toValue: 1.45,
+          duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(textPulseAnim, {
           toValue: 1,
-          duration: 1000,
+          duration: 800,
           useNativeDriver: true,
         }),
       ])
@@ -68,51 +77,18 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
     return () => textPulse.stop();
   }, []);
 
+  // Fast pulsing animation for alarm text
+  useEffect(() => {
+    // This effect is no longer needed as alarmTextPulseAnim is removed
+  }, []);
+
   const handleDownload = () => {
     // Enhanced alarm sequence
     setIsAlarmActive(true);
     playSound('ui_alert');
     
-    // Start red flashing light effect
-    const flashSequence = Animated.loop(
-      Animated.sequence([
-        Animated.timing(flashAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(flashAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    flashSequence.start();
-    
-    // Play additional alarm sounds for dramatic effect
-    setTimeout(() => {
-      playSound('ui_alert');
-    }, 400);
-    
-    setTimeout(() => {
-      playSound('ui_alert');
-    }, 800);
-    
-    setTimeout(() => {
-      playSound('ui_alert');
-    }, 1200);
-    
-    setTimeout(() => {
-      playSound('ui_alert');
-    }, 1600);
-    
-    // Go to home screen after extended alarm sequence
-    setTimeout(() => {
-      flashSequence.stop();
-      setIsAlarmActive(false);
-      onDownload();
-    }, 3000); // 3 second delay for enhanced alarm sequence
+    // The SystemCompromisedAnimation will handle calling onDownload() when it completes
+    // No need for a separate timer here
   };
 
   const getTitle = () => {
@@ -132,11 +108,11 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
     const username = getUsername();
     switch (type) {
       case 'signup':
-        return `Welcome to the system, ${username}. Access granted to all modules.`;
+        return `Welcome to the system, ${username}.\nAccess granted to all modules.`;
       case 'signin':
         return `Welcome back, ${username}.`;
       case 'guest':
-        return `Welcome, ${username}. Access granted to all modules.`;
+        return `Welcome, ${username}.\nAccess granted to all modules.`;
       default:
         return 'Operation completed successfully.';
     }
@@ -151,26 +127,28 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
       shouldPlay={false}
       resizeMode="cover"
     >
-      {/* Red flashing overlay during alarm */}
+      {/* System Compromised Animation */}
       {isAlarmActive && (
-        <Animated.View 
-          className="absolute inset-0 z-10"
-          style={{
-            backgroundColor: 'rgba(220, 38, 38, 0.6)',
-            opacity: flashAnim,
+        <SystemCompromisedAnimation 
+          onComplete={() => {
+            // Don't reset alarm state - keep button in compromised state
+            // setIsAlarmActive(false); // REMOVED - keep compromised state
+            onDownload();
           }}
+          isVideoBuffering={isVideoBuffering}
+          isVideoPlaying={isVideoPlaying}
         />
       )}
       
       <View className="flex-1 px-10 justify-center">
         {/* Welcome Section */}
         <View className="items-center mb-12">
-          <View className="bg-black/80 py-6 px-8 rounded-lg border border-green-400">
-            <Text className="text-3xl font-bold text-green-400 text-center mb-3">
+          <View className="bg-black/80 py-4 px-5 rounded-lg border border-green-400">
+            <Text className="text-2xl font-bold text-green-400 text-center mb-2">
               {getTitle()}
             </Text>
             
-            <Text className="text-white text-center leading-6">
+            <Text className="text-white text-center leading-6 text-md">
               {getMessage()}
             </Text>
           </View>
@@ -179,7 +157,7 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
         {/* Game Menu Section */}
         <View className="items-center">
           <View className="items-center mb-8">
-            <Text className={`${TYPOGRAPHY.TITLE} text-green-400 mb-2 pt-10`}>CORE DEFENDER</Text>
+            <Text className={`${TYPOGRAPHY.TITLE} text-green-400 text-2xl mb-2 pt-5`}>CORE DEFENDER</Text>
             <Text className="text-lg text-gray-400">Defend the Digital Realm</Text>
           </View>
           
@@ -191,16 +169,17 @@ export default function WelcomeGameScreen({ type, guestUsername, onDownload }: W
             
             <Animated.View style={{ transform: [{ scale: pulseAnim }], position: 'relative' }}>
             <TouchableOpacity 
-              className={`px-8 py-4 rounded-lg mb-6 ${isAlarmActive ? 'bg-red-600' : 'bg-green-600'}`}
+              className="px-8 py-4 rounded-lg mb-6 bg-green-600"
               onPress={handleDownload}
+              // isAlarmActive is removed, so this line is no longer needed
             >
                 <Animated.View style={{ transform: [{ scale: textPulseAnim }] }}>
                   <Text className="text-white font-bold text-lg text-center">
-                    {isAlarmActive ? '⚠️SYSTEM COMPROMISED⚠️' : 'DOWNLOAD NOW'}
+                    DOWNLOAD NOW
                   </Text>
                 </Animated.View>
                 <Text className="text-white text-sm text-center mt-1">
-                  {isAlarmActive ? 'VIRUS DETECTED' : 'Free • 4.8★ • 10M+ Downloads'}
+                  Free • 4.8★ • 10M+ Downloads
                 </Text>
             </TouchableOpacity>
             </Animated.View>

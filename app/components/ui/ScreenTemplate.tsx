@@ -67,7 +67,7 @@ export default function ScreenTemplate({
   }
 
   return (
-    <View className={`flex-1 bg-black ${className}`}>
+    <View className={`flex-1 bg-red-950 ${className}`}>
       {content}
     </View>
   );

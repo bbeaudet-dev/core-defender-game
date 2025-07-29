@@ -24,6 +24,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [isGlitching, setIsGlitching] = useState(false);
   
   const { signIn, signUp, isLoading } = useAuth();
 
@@ -74,7 +75,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   return (
     <AnimatedBackground 
       source={require('../../../assets/images/glowing-green-neon-with-stars-29-09-2024-1727679307-hd-wallpaper.jpg')}
-      opacity={1.0}
+      opacity={isGlitching ? 0.7 : 1.0}
       isVideo={false}
       shouldLoop={false}
       shouldPlay={false}
@@ -95,7 +96,7 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ marginBottom: 20 }}>
+          <View style={{ marginBottom: 70, marginTop: -20 }}>
             <View style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
@@ -105,18 +106,52 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
+              {/* CORE text */}
               <GlitchText 
-                text="CORE DEFENDER"
-                fontSize={32}
+                text="CORE"
+                fontSize={35}
                 width={300}
-                height={80}
-                animationSpeed={150}
-                animationInterval={2000}
+                height={56}
+                animationSpeed={50}
+                animationInterval={1250}
+                animationInterval2={1250}
                 primaryColor="#E5484D"
                 secondaryColor="#12A594"
                 baseColor="white"
                 opacity={0.9}
                 textAlign="center"
+                baseWord="CORE"
+                wordList={['SYSTEM']}
+                wordColors={{
+                  'CORE': 'white',
+                  'SYSTEM': 'white',
+                }}
+                onAnimationStart={() => setIsGlitching(true)}
+                onAnimationEnd={() => setIsGlitching(false)}
+              />
+              {/* DEFENDER text */}
+              <GlitchText 
+                text="DEFENDER"
+                fontSize={35}
+                width={300}
+                height={56}
+                animationSpeed={50}
+                animationInterval={1190}
+                animationInterval2={60}
+                primaryColor="#E5484D"
+                secondaryColor="#12A594"
+                baseColor="white"
+                opacity={0.9}
+                textAlign="center"
+                baseWord="DEFENDER"
+                wordList={['PROTOCOL', 'GUARDIAN']}
+                wordColors={{
+                  'DEFENDER': 'white',
+                  'PROTOCOL': '#4ECDC4',
+                  'GUARDIAN': '#45B7D1',
+                }}
+                onAnimationStart={() => setIsGlitching(true)}
+                onAnimationEnd={() => setIsGlitching(false)}
               />
             </View>
           </View>

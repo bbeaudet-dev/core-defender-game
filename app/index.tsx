@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, View } from 'react-native';
 import HomeScreen from './components/home/HomeScreen';
 import DownloadScreen from './components/login/DownloadScreen';
 import LoginScreen from './components/login/LoginScreen';
+import RebootSequence from './components/login/RebootSequence';
 import SystemModule from './components/modules/about/System/SystemModule';
 import VideoPlayer from './components/ui/VideoPlayer';
 import { useAuth } from './contexts/AuthContext';
@@ -10,6 +11,7 @@ import { InfectionProvider } from './contexts/InfectionContext';
 import { PuzzleProvider } from './contexts/PuzzleContext';
 import { MODULE_COMPONENTS } from './data/components';
 import { authApi } from './lib/auth';
+import { GAME_CONFIG } from './lib/config';
 import { LoginType } from './types/auth';
 
 function AppContent() {
@@ -17,6 +19,21 @@ function AppContent() {
   const [gameState, setGameState] = useState('welcome');
   const [loginType, setLoginType] = useState<LoginType>('signin');
   const [guestUsername, setGuestUsername] = useState<string>('');
+  const [isVideoBuffering, setIsVideoBuffering] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [showRebootOverlay, setShowRebootOverlay] = useState(false);
+  const overlayOpacity = useRef(new Animated.Value(1)).current;
+  const rebootOverlayOpacity = useRef(new Animated.Value(0)).current;
+
+  // Debug log when reboot overlay state changes
+  useEffect(() => {
+    console.log('🔄 Reboot overlay state changed:', showRebootOverlay);
+  }, [showRebootOverlay]);
+
+  // Debug log when game state changes
+  useEffect(() => {
+    console.log('🎮 Game state changed to:', gameState);
+  }, [gameState]);
 
   // Test API connection on startup
   useEffect(() => {
@@ -46,13 +63,72 @@ function AppContent() {
   }
   
   const handleDownload = () => {
-    // Show video first, then go to home screen
-    setGameState('video');
+    // Start buffering the video immediately when download is pressed
+    setIsVideoBuffering(true);
+    
+    // The SystemCompromisedAnimation will call onDownload() when it completes
+    // which will start the video playing
   };
 
   const handleVideoComplete = () => {
-    // Video finished, go to home screen
+    // Video finished, but we're using overlay system
+    // The reboot overlay should already be visible from handleVideoEnd
+    // Just ensure it's shown
+    console.log('🎬 Video completed - ensuring reboot overlay is visible');
+    setShowRebootOverlay(true);
+  };
+
+  const handleRebootComplete = () => {
+    // Reboot sequence finished, go to home screen
+    console.log('🔄 Reboot sequence completed - going to home');
+    setShowRebootOverlay(false);
     setGameState('home');
+  };
+
+  const handleDownloadComplete = () => {
+    // Called when SystemCompromisedAnimation completes (1 second early)
+    console.log('🎬 handleDownloadComplete called - starting video transition');
+    console.log('🎬 Current state - isVideoBuffering:', isVideoBuffering, 'isVideoPlaying:', isVideoPlaying);
+    
+    // Fallback: if video doesn't start within 2 seconds, force the transition
+    setTimeout(() => {
+      if (!isVideoPlaying) {
+        console.log('🎬 Fallback: forcing video transition after 2 seconds');
+        setIsVideoPlaying(true);
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      }
+    }, 2000);
+  };
+
+  const handleVideoStart = () => {
+    // Called when video actually starts playing
+    console.log('🎬 handleVideoStart called - video is playing');
+    setIsVideoPlaying(true);
+    
+    // Fade out the overlay smoothly
+    Animated.timing(overlayOpacity, {
+      toValue: 0,
+      duration: 500, // 500ms fade
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleVideoEnd = () => {
+    // Called when video is about to end - show reboot overlay with fade
+    console.log('🎬 Video ending - showing reboot overlay');
+    console.log('🎬 Video will continue playing for 2 more seconds');
+    setShowRebootOverlay(true);
+    
+    // Fade in the reboot overlay quickly while video continues
+    Animated.timing(rebootOverlayOpacity, {
+      toValue: 1,
+      duration: 500, // 500ms fade (much faster to ensure it's visible)
+      useNativeDriver: true,
+    }).start();
   };
 
   const navigate = (destination: string) => {
@@ -72,26 +148,47 @@ function AppContent() {
   if (gameState === 'welcome') {
     return (
       <View className="flex-1">
-        <DownloadScreen 
-          type={loginType}
-          guestUsername={guestUsername}
-          onDownload={handleDownload}
-        />        
+        {/* Video Player - Rendered underneath when transitioning */}
+        {(isVideoBuffering || isVideoPlaying) && (
+          <>
+            {console.log('🎬 Rendering VideoPlayer - isVideoBuffering:', isVideoBuffering, 'isVideoPlaying:', isVideoPlaying)}
+            <VideoPlayer
+              source={require('../assets/animations/Compromised_animation_HEV3.mp4')}
+              onComplete={handleVideoComplete}
+              onEnd={handleVideoEnd}
+              duration={GAME_CONFIG.VIDEO_DURATION}
+              onStart={handleVideoStart}
+            />
+          </>
+        )}
+        
+        {/* DownloadScreen - Always visible, fades out when video starts */}
+        <Animated.View 
+          className="absolute inset-0 z-50"
+          style={{ opacity: isVideoPlaying ? overlayOpacity : 1 }}
+          pointerEvents={isVideoPlaying ? 'none' : 'auto'}
+        >
+          <DownloadScreen 
+            type={loginType}
+            guestUsername={guestUsername}
+            onDownload={handleDownloadComplete}
+            isVideoBuffering={isVideoBuffering}
+            isVideoPlaying={isVideoPlaying}
+          />
+        </Animated.View>
+        
+        {/* RebootSequence Overlay - Fades in when video ends */}
+        <Animated.View 
+          className="absolute inset-0 z-40"
+          style={{ opacity: rebootOverlayOpacity }}
+        >
+          {showRebootOverlay && <RebootSequence onComplete={handleRebootComplete} />}
+        </Animated.View>
       </View>
     );
   }
 
-  if (gameState === 'video') {
-    return (
-      <View className="flex-1">
-        <VideoPlayer
-          source={require('../assets/animations/20250728_1948_Digital Demon Emergence_simple_compose_01k19q006vfw1vh5mbjcf6y17m.mp4')}
-          onComplete={handleVideoComplete}
-          duration={5000} // 8 seconds for the video
-        />
-      </View>
-    );
-  }
+
 
   if (gameState === 'home') {
     return (

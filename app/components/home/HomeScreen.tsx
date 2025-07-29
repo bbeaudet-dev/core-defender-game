@@ -5,18 +5,17 @@ import { usePuzzle } from '../../contexts/PuzzleContext';
 import { ALL_MODULES, isModulePuzzleCompleted, shouldModuleBeUnlocked } from '../../data/modules';
 import { HomeScreenProps } from '../../types/game';
 import { AppStatus } from '../../types/modules';
-import { playBackgroundMusic } from '../../utils/soundManager';
+import { playBackgroundMusic, SoundManager } from '../../utils/soundManager';
 import AppIconWithHalo from '../ui/AppIconWithHalo';
 import ScreenTemplate from '../ui/ScreenTemplate';
 import InfectionProgressBar from './InfectionProgressBar';
-
-
 
 export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   const { infectionProgress, infectionStatus } = useInfection();
   const { getCompletedPuzzles } = usePuzzle();
   const [unlockedModules, setUnlockedModules] = useState<string[]>(['tutorial']);
   const [unlockAnimations, setUnlockAnimations] = useState<Record<string, boolean>>({});
+  const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
   const lastCompletedPuzzlesRef = useRef<string[]>([]);
 
   // Get background image based on final boss status
@@ -25,6 +24,12 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   const backgroundImage = isFinalBossDefeated 
     ? require('../../../assets/images/glowing-green-neon-with-stars-29-09-2024-1727679307-hd-wallpaper.jpg')
     : require('../../../assets/images/red frame.png');
+
+  // Preload the background image
+  useEffect(() => {
+    // Set background as loaded immediately to avoid white flash
+    setIsBackgroundLoaded(true);
+  }, [backgroundImage]);
 
   // Check for new unlocks when completed puzzles change
   useEffect(() => {
@@ -71,8 +76,12 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
 
   // Start main menu theme when component mounts
   useEffect(() => {
-    // Play the main menu theme
-    playBackgroundMusic('cyberpunk_bass_1', require('../../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
+    // Only start background music if no music is currently playing
+    // This prevents conflicts with the music module
+    const soundManager = SoundManager.getInstance();
+    if (!soundManager.isBackgroundMusicPlaying()) {
+      playBackgroundMusic('cyberpunk_bass_1', require('../../../assets/sounds/ui/784904__sadiquecat__100-bpm-cyberpunk-bass-1-roland-s1.mp3'), true);
+    }
   }, []);
 
   const handleAppPress = (moduleName: string) => {
@@ -105,7 +114,7 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-red-950">
       <ScreenTemplate 
         title="HOME" 
         titleColor="red" 
@@ -113,23 +122,23 @@ export default function HomeScreen({ onOpenModule }: HomeScreenProps) {
         backgroundImage={backgroundImage}
       >
         <View className="flex-row flex-wrap justify-center pt-4 pb-24">
-          {ALL_MODULES.map(module => (
-            <View key={module.name} className="w-28 py-2 px-1 mx-1">
-              <AppIconWithHalo
-                icon={module.icon}
-                name={module.displayName}
-                color={module.color}
-                onPress={() => handleAppPress(module.name)}
-                status={getModuleStatus(module.name)}
-                badge={getModuleBadge(module.name)}
+            {ALL_MODULES.map(module => (
+              <View key={module.name} className="w-28 py-2 px-1 mx-1">
+                <AppIconWithHalo
+                  icon={module.icon}
+                  name={module.displayName}
+                  color={module.color}
+                  onPress={() => handleAppPress(module.name)}
+                  status={getModuleStatus(module.name)}
+                  badge={getModuleBadge(module.name)}
 
-                showUnlockAnimation={unlockAnimations[module.name] || false}
-                isFinalBossDefeated={isFinalBossDefeated}
-              />
-            </View>
-          ))}
-        </View>
-      </ScreenTemplate>
+                  showUnlockAnimation={unlockAnimations[module.name] || false}
+                  isFinalBossDefeated={isFinalBossDefeated}
+                />
+              </View>
+            ))}
+          </View>
+        </ScreenTemplate>
       
       <InfectionProgressBar 
         progress={infectionProgress} 
