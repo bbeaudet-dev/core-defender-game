@@ -18,15 +18,22 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app needs access to the microphone to detect audio levels and provide audio feedback.",
         "NSLocationWhenInUseUsageDescription": "This app needs access to location to provide GPS-based puzzle functionality.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to provide GPS-based puzzle functionality."
-      }
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to provide GPS-based puzzle functionality.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.bbeaudetdev.coredefender"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.bbeaudetdev.coredefender"
     },
     "web": {
       "bundler": "metro",
@@ -85,6 +92,12 @@
         "asset": "./assets/fonts/SpaceMono-Regular.ttf",
         "family": "SpaceMono"
       }
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "afa1dce8-b2c7-4ac2-98d1-bbcacf2873fd"
+      }
+    }
   }
 }
