@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Text, View } from 'react-native';
+import { Animated, ImageBackground, Text, View } from 'react-native';
 import { FONTS } from '../../data/fonts';
 import { playSound } from '../../utils/soundManager';
-import ScreenTemplate from '../ui/ScreenTemplate';
 
 interface RebootSequenceProps {
   onComplete: () => void;
@@ -68,44 +67,46 @@ export default function RebootSequence({ onComplete }: RebootSequenceProps) {
   };
 
   return (
-    <ScreenTemplate 
-      title="REBOOT" 
-      titleColor="red" 
-      showHomeButton={false}
-      backgroundImage={require('../../../assets/images/red frame.png')}
-    >
-      <View className="flex-1 justify-center items-center px-8">
-        {/* Terminal output container */}
-        <View className="bg-black/80 p-6 rounded-lg border border-red-400 max-w-md">
-          {/* Terminal header */}
-          <Text className="text-red-400 text-sm font-mono mb-4">
-            CORE_DEFENDER://reboot/emergency
-          </Text>
-          
-          {/* Terminal messages */}
-          <View className="space-y-2">
-            {displayedSteps.map((step, index) => (
-              <Text 
-                key={index}
-                className="text-red-400 text-sm font-mono"
-                style={{ fontFamily: FONTS.TERMINAL }}
-              >
-                {`> ${step}`}
-              </Text>
-            ))}
+    <View className="flex-1">
+      {/* Background image */}
+      <ImageBackground 
+        source={require('../../../assets/images/red frame.png')}
+        className="flex-1"
+        resizeMode="cover"
+      >
+        <View className="flex-1 justify-center items-center px-8">
+          {/* Terminal output container */}
+          <View className="bg-black/80 p-6 rounded-lg border border-red-400 max-w-md">
+            {/* Terminal header */}
+            <Text className="text-red-400 text-sm font-mono mb-4">
+              CORE_DEFENDER://reboot/emergency
+            </Text>
             
-            {/* Final cursor */}
-            {currentStep >= rebootSteps.length && (
-              <Text 
-                className="text-red-400 text-sm font-mono"
-                style={{ fontFamily: FONTS.TERMINAL }}
-              >
-                {`> `}
-              </Text>
-            )}
+            {/* Terminal messages */}
+            <View className="space-y-2">
+              {displayedSteps.map((step, index) => (
+                <Text 
+                  key={index}
+                  className="text-red-400 text-sm font-mono"
+                  style={{ fontFamily: FONTS.TERMINAL }}
+                >
+                  {`> ${step}`}
+                </Text>
+              ))}
+              
+              {/* Final cursor */}
+              {currentStep >= rebootSteps.length && (
+                <Text 
+                  className="text-red-400 text-sm font-mono"
+                  style={{ fontFamily: FONTS.TERMINAL }}
+                >
+                  {'>'} SYSTEM READY
+                </Text>
+              )}
+            </View>
           </View>
         </View>
-      </View>
-    </ScreenTemplate>
+      </ImageBackground>
+    </View>
   );
 } 

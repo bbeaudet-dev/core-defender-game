@@ -11,7 +11,7 @@ interface WelcomeGameScreenProps {
   guestUsername: string;
   onDownload: () => void;
   isVideoBuffering?: boolean;
-  isAlarmActive?: boolean; // Allow external control of alarm state
+  isVideoPlaying?: boolean; // New prop
 }
 
 export default function WelcomeGameScreen({ 
@@ -19,18 +19,15 @@ export default function WelcomeGameScreen({
   guestUsername, 
   onDownload, 
   isVideoBuffering = false,
-  isAlarmActive: externalAlarmActive = false
+  isVideoPlaying = false
 }: WelcomeGameScreenProps) {
   const { user } = useAuth();
   const buttonRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const textPulseAnim = useRef(new Animated.Value(1)).current;
-  const alarmTextPulseAnim = useRef(new Animated.Value(1)).current;
   
-  // Use external alarm state if provided, otherwise use internal state
-  const [internalAlarmActive, setInternalAlarmActive] = useState(false);
-  const isAlarmActive = externalAlarmActive !== false ? externalAlarmActive : internalAlarmActive;
-
+  const [isAlarmActive, setIsAlarmActive] = useState(false);
+  
   // Get the appropriate username based on login type
   const getUsername = () => {
     if (type === 'guest') {
@@ -46,19 +43,19 @@ export default function WelcomeGameScreen({
       Animated.sequence([
         Animated.timing(pulseAnim, {
           toValue: 1.15,
-          duration: isAlarmActive ? 300 : 800,
+          duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: isAlarmActive ? 300 : 800,
+          duration: 800,
           useNativeDriver: true,
         }),
       ])
     );
     pulse.start();
     return () => pulse.stop();
-  }, [isAlarmActive]);
+  }, []);
 
   // More intense pulsing animation for the text (reduced intensity)
   useEffect(() => {
@@ -82,29 +79,12 @@ export default function WelcomeGameScreen({
 
   // Fast pulsing animation for alarm text
   useEffect(() => {
-    if (isAlarmActive) {
-      const alarmTextPulse = Animated.loop(
-        Animated.sequence([
-          Animated.timing(alarmTextPulseAnim, {
-            toValue: 1.20,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(alarmTextPulseAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ])
-      );
-      alarmTextPulse.start();
-      return () => alarmTextPulse.stop();
-    }
-  }, [isAlarmActive]);
+    // This effect is no longer needed as alarmTextPulseAnim is removed
+  }, []);
 
   const handleDownload = () => {
     // Enhanced alarm sequence
-    setInternalAlarmActive(true);
+    setIsAlarmActive(true);
     playSound('ui_alert');
     
     // The SystemCompromisedAnimation will handle calling onDownload() when it completes
@@ -151,14 +131,12 @@ export default function WelcomeGameScreen({
       {isAlarmActive && (
         <SystemCompromisedAnimation 
           onComplete={() => {
-            setInternalAlarmActive(false);
+            // Don't reset alarm state - keep button in compromised state
+            // setIsAlarmActive(false); // REMOVED - keep compromised state
             onDownload();
           }}
           isVideoBuffering={isVideoBuffering}
-          onVideoBufferingComplete={() => {
-            // This will be called when the animation completes
-            // The main app's onDownload will handle the state transition
-          }}
+          isVideoPlaying={isVideoPlaying}
         />
       )}
       
@@ -191,17 +169,17 @@ export default function WelcomeGameScreen({
             
             <Animated.View style={{ transform: [{ scale: pulseAnim }], position: 'relative' }}>
             <TouchableOpacity 
-              className={`px-8 py-4 rounded-lg mb-6 ${isAlarmActive ? 'bg-red-600 opacity-80' : 'bg-green-600'}`}
+              className="px-8 py-4 rounded-lg mb-6 bg-green-600"
               onPress={handleDownload}
-              disabled={isAlarmActive} // Disable button during alarm to prevent multiple clicks
+              // isAlarmActive is removed, so this line is no longer needed
             >
-                <Animated.View style={{ transform: [{ scale: isAlarmActive ? alarmTextPulseAnim : textPulseAnim }] }}>
+                <Animated.View style={{ transform: [{ scale: textPulseAnim }] }}>
                   <Text className="text-white font-bold text-lg text-center">
-                    {isAlarmActive ? '⚠️SYSTEM COMPROMISED⚠️' : 'DOWNLOAD NOW'}
+                    DOWNLOAD NOW
                   </Text>
                 </Animated.View>
                 <Text className="text-white text-sm text-center mt-1">
-                  {isAlarmActive ? 'BREACH DETECTED' : 'Free • 4.8★ • 10M+ Downloads'}
+                  Free • 4.8★ • 10M+ Downloads
                 </Text>
             </TouchableOpacity>
             </Animated.View>

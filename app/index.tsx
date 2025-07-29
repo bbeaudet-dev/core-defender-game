@@ -21,9 +21,19 @@ function AppContent() {
   const [guestUsername, setGuestUsername] = useState<string>('');
   const [isVideoBuffering, setIsVideoBuffering] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [isAlarmActive, setIsAlarmActive] = useState(false);
   const [showRebootOverlay, setShowRebootOverlay] = useState(false);
   const overlayOpacity = useRef(new Animated.Value(1)).current;
+  const rebootOverlayOpacity = useRef(new Animated.Value(0)).current;
+
+  // Debug log when reboot overlay state changes
+  useEffect(() => {
+    console.log('🔄 Reboot overlay state changed:', showRebootOverlay);
+  }, [showRebootOverlay]);
+
+  // Debug log when game state changes
+  useEffect(() => {
+    console.log('🎮 Game state changed to:', gameState);
+  }, [gameState]);
 
   // Test API connection on startup
   useEffect(() => {
@@ -55,31 +65,48 @@ function AppContent() {
   const handleDownload = () => {
     // Start buffering the video immediately when download is pressed
     setIsVideoBuffering(true);
-    setIsAlarmActive(true); // Set alarm state for smooth transition
     
     // The SystemCompromisedAnimation will call onDownload() when it completes
-    // which will transition to the video state and stop buffering
+    // which will start the video playing
   };
 
   const handleVideoComplete = () => {
-    // Video finished, go to reboot sequence
-    setGameState('reboot');
+    // Video finished, but we're using overlay system
+    // The reboot overlay should already be visible from handleVideoEnd
+    // Just ensure it's shown
+    console.log('🎬 Video completed - ensuring reboot overlay is visible');
+    setShowRebootOverlay(true);
   };
 
   const handleRebootComplete = () => {
     // Reboot sequence finished, go to home screen
+    console.log('🔄 Reboot sequence completed - going to home');
+    setShowRebootOverlay(false);
     setGameState('home');
   };
 
   const handleDownloadComplete = () => {
-    // Called when SystemCompromisedAnimation completes
-    setIsVideoBuffering(false);
-    setGameState('video');
-    // Don't reset isAlarmActive - keep the alarm state for smooth transition
+    // Called when SystemCompromisedAnimation completes (1 second early)
+    console.log('🎬 handleDownloadComplete called - starting video transition');
+    console.log('🎬 Current state - isVideoBuffering:', isVideoBuffering, 'isVideoPlaying:', isVideoPlaying);
+    
+    // Fallback: if video doesn't start within 2 seconds, force the transition
+    setTimeout(() => {
+      if (!isVideoPlaying) {
+        console.log('🎬 Fallback: forcing video transition after 2 seconds');
+        setIsVideoPlaying(true);
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      }
+    }, 2000);
   };
 
   const handleVideoStart = () => {
     // Called when video actually starts playing
+    console.log('🎬 handleVideoStart called - video is playing');
     setIsVideoPlaying(true);
     
     // Fade out the overlay smoothly
@@ -91,8 +118,17 @@ function AppContent() {
   };
 
   const handleVideoEnd = () => {
-    // Called when video is about to end - show reboot overlay
+    // Called when video is about to end - show reboot overlay with fade
+    console.log('🎬 Video ending - showing reboot overlay');
+    console.log('🎬 Video will continue playing for 2 more seconds');
     setShowRebootOverlay(true);
+    
+    // Fade in the reboot overlay quickly while video continues
+    Animated.timing(rebootOverlayOpacity, {
+      toValue: 1,
+      duration: 500, // 500ms fade (much faster to ensure it's visible)
+      useNativeDriver: true,
+    }).start();
   };
 
   const navigate = (destination: string) => {
@@ -112,32 +148,24 @@ function AppContent() {
   if (gameState === 'welcome') {
     return (
       <View className="flex-1">
-        <DownloadScreen 
-          type={loginType}
-          guestUsername={guestUsername}
-          onDownload={handleDownloadComplete}
-          isVideoBuffering={isVideoBuffering}
-        />        
-      </View>
-    );
-  }
-
-  if (gameState === 'video') {
-    return (
-      <View className="flex-1">
-        {/* Video Player - Always rendered underneath */}
-        <VideoPlayer
-          source={require('../assets/animations/Compromised_animation_HEV.mp4')}
-          onComplete={handleVideoComplete}
-          onEnd={handleVideoEnd}
-          duration={GAME_CONFIG.VIDEO_DURATION}
-          onStart={handleVideoStart}
-        />
+        {/* Video Player - Rendered underneath when transitioning */}
+        {(isVideoBuffering || isVideoPlaying) && (
+          <>
+            {console.log('🎬 Rendering VideoPlayer - isVideoBuffering:', isVideoBuffering, 'isVideoPlaying:', isVideoPlaying)}
+            <VideoPlayer
+              source={require('../assets/animations/Compromised_animation_HEV3.mp4')}
+              onComplete={handleVideoComplete}
+              onEnd={handleVideoEnd}
+              duration={GAME_CONFIG.VIDEO_DURATION}
+              onStart={handleVideoStart}
+            />
+          </>
+        )}
         
-        {/* DownloadScreen Overlay - Fades out when video starts */}
+        {/* DownloadScreen - Always visible, fades out when video starts */}
         <Animated.View 
           className="absolute inset-0 z-50"
-          style={{ opacity: overlayOpacity }}
+          style={{ opacity: isVideoPlaying ? overlayOpacity : 1 }}
           pointerEvents={isVideoPlaying ? 'none' : 'auto'}
         >
           <DownloadScreen 
@@ -145,28 +173,22 @@ function AppContent() {
             guestUsername={guestUsername}
             onDownload={handleDownloadComplete}
             isVideoBuffering={isVideoBuffering}
-            isAlarmActive={isAlarmActive}
+            isVideoPlaying={isVideoPlaying}
           />
         </Animated.View>
         
         {/* RebootSequence Overlay - Fades in when video ends */}
         <Animated.View 
           className="absolute inset-0 z-40"
-          style={{ opacity: showRebootOverlay ? 1 : 0 }}
+          style={{ opacity: rebootOverlayOpacity }}
         >
-          <RebootSequence onComplete={handleRebootComplete} />
+          {showRebootOverlay && <RebootSequence onComplete={handleRebootComplete} />}
         </Animated.View>
       </View>
     );
   }
 
-  if (gameState === 'reboot') {
-    return (
-      <View className="flex-1">
-        <RebootSequence onComplete={handleRebootComplete} />
-      </View>
-    );
-  }
+
 
   if (gameState === 'home') {
     return (

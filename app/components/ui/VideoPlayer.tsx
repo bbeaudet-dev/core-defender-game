@@ -61,11 +61,12 @@ export default function VideoPlayer({
 
   // Complete when video duration is reached
   useEffect(() => {
-    // Call onEnd slightly before video ends for smooth transition
+    // Call onEnd much earlier to show reboot overlay while video is definitely still playing
     if (onEnd) {
       const endTimer = setTimeout(() => {
+        console.log('🎬 Video ending (2000ms before completion)');
         onEnd();
-      }, duration - 500); // 500ms before end
+      }, duration - 2000); // 2000ms before end (increased from 1000ms)
       
       return () => clearTimeout(endTimer);
     }
