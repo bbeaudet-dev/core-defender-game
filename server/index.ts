@@ -25,11 +25,13 @@ app.post('/api/auth/signin', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' })
+      res.status(400).json({ error: 'Email and password are required' })
+      return
     }
     const [user] = await db.select().from(users).where(eq(users.email, email))
     if (!user || user.password !== password) {
-      return res.status(401).json({ error: 'Invalid credentials' })
+      res.status(401).json({ error: 'Invalid credentials' })
+      return
     }
     res.json({ user: { id: user.id, email: user.email, name: user.name } })
   } catch (error) {
@@ -42,14 +44,17 @@ app.post('/api/auth/signup', async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' })
+      res.status(400).json({ error: 'Email and password are required' })
+      return
     }
     if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
-      return res.status(400).json({ error: 'Please enter a valid email address' })
+      res.status(400).json({ error: 'Please enter a valid email address' })
+      return
     }
     const [existingUser] = await db.select().from(users).where(eq(users.email, email))
     if (existingUser) {
-      return res.status(409).json({ error: 'User already exists' })
+      res.status(409).json({ error: 'User already exists' })
+      return
     }
     const newUser = {
       id: crypto.randomUUID(),

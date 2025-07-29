@@ -1,14 +1,11 @@
-import {
-  AudioRecorder,
-  requestRecordingPermissionsAsync,
-  setAudioModeAsync
-} from 'expo-audio';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
+import { AudioRecorder, requestRecordingPermissionsAsync, setAudioModeAsync } from 'expo-audio';
 import { usePuzzle } from '../../../contexts/PuzzleContext';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
+import { TYPOGRAPHY } from '../../../data/fonts';
+import { getModuleBackgroundImage } from '../../../data/modules';
+import { playSound } from '../../../utils/soundManager';
 import ScreenTemplate from '../../ui/ScreenTemplate';
-import AudioLevelIndicator from './AudioLevelIndicator';
 import AudioWaveform from './AudioWaveform';
 
 interface MicrophoneModuleProps {
@@ -115,11 +112,10 @@ export default function MicrophoneModule({ onGoHome }: MicrophoneModuleProps) {
       >
       <View className="flex flex-col space-y-4">
         {/* Microphone Status */}
-        <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-4">MICROPHONE STATUS</Text>
-          <View className="flex flex-row items-center justify-center">
-            <Text className="text-4xl mr-4">{isRecording ? '🎤' : '🎙️'}</Text>
-            <Text className={`text-xl font-mono ${isRecording ? 'text-blue-400' : 'text-gray-400'}`}>
+        <View className="bg-gray-900 p-6 rounded-lg mb-4">
+          <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-4`}>MICROPHONE STATUS</Text>
+          <View className="items-center">
+            <Text className={`text-xl ${TYPOGRAPHY.H3} ${isRecording ? 'text-blue-400' : 'text-gray-400'}`}>
               {isRecording ? 'RECORDING' : 'STANDBY'}
             </Text>
           </View>
@@ -127,53 +123,49 @@ export default function MicrophoneModule({ onGoHome }: MicrophoneModuleProps) {
           {/* Puzzle Status */}
           {puzzleComplete && (
             <View className="mt-4 p-3 bg-green-900 rounded-lg">
-              <Text className="text-green-400 text-center font-mono text-sm">
-                ✅ AUDIO DETECTION COMPLETE
+              <Text className={`text-green-400 text-center ${TYPOGRAPHY.BODY_SMALL}`}>
+                ✅ AUDIO VERIFICATION COMPLETE
               </Text>
               </View>
           )}
             </View>
             
-        {/* Audio Level Display */}
-        <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-4">AUDIO LEVEL</Text>
-          <AudioLevelIndicator audioLevel={audioLevel} audioLevelAnim={animationRef} />
-          <Text className="text-center text-gray-300 font-mono mt-2">
-            Current: {Math.round(audioLevel * 100)}%
+        {/* Audio Level */}
+        <View className="bg-gray-900 p-6 rounded-lg mb-4">
+          <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-4`}>AUDIO LEVEL</Text>
+          <View className="items-center">
+            <Text className={`text-center text-gray-300 ${TYPOGRAPHY.BODY} mt-2`}>
+              {audioLevel.toFixed(1)} dB
           </Text>
-          <Text className="text-center text-gray-300 font-mono">
-            Max: {Math.round(maxAudioLevel * 100)}%
+            <Text className={`text-center text-gray-300 ${TYPOGRAPHY.BODY_SMALL}`}>
+              {audioLevel > 50 ? 'HIGH' : audioLevel > 20 ? 'MEDIUM' : 'LOW'}
                 </Text>
+          </View>
             </View>
 
         {/* Audio Waveform */}
-        <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-4">AUDIO WAVEFORM</Text>
+        <View className="bg-gray-900 p-6 rounded-lg mb-4">
+          <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-4`}>AUDIO WAVEFORM</Text>
           <AudioWaveform audioLevel={audioLevel} />
-        </View>
       </View>
 
         {/* Controls */}
         <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-4">CONTROLS</Text>
-          <View className="space-y-3">
+          <Text className={`text-gray-400 ${TYPOGRAPHY.BODY_SMALL} mb-4`}>CONTROLS</Text>
+          <View className="items-center">
             <TouchableOpacity
-              onPress={isRecording ? stopRecording : startRecording}
-              className={`p-4 rounded-lg ${isRecording ? 'bg-red-600' : 'bg-blue-600'}`}
+              onPress={startRecording}
+              className={`p-4 rounded-lg ${isRecording ? 'bg-red-600' : 'bg-green-600'}`}
             >
-              <Text className="text-center font-mono text-lg">
+              <Text className={`text-center ${TYPOGRAPHY.H4}`}>
                 {isRecording ? 'STOP RECORDING' : 'START RECORDING'}
               </Text>
             </TouchableOpacity>
             
-            <TouchableOpacity
-              onPress={resetAudioLevel}
-              className="p-3 bg-gray-700 rounded-lg"
-            >
-              <Text className="text-center font-mono text-sm text-gray-300">
-                RESET AUDIO LEVEL
+            <Text className={`text-center ${TYPOGRAPHY.BODY_SMALL} text-gray-300 mt-4`}>
+              Tap to {isRecording ? 'stop' : 'start'} audio recording
               </Text>
-            </TouchableOpacity>
+          </View>
           </View>
         </View>
 

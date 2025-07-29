@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { DEFAULT_PUZZLES, PuzzleConfig, PuzzleState } from '../components/puzzles/types';
+import { getModuleNameForPuzzle, getModulesToUnlock } from '../data/modules';
+import { DEFAULT_PUZZLES, PuzzleConfig, PuzzleState } from '../types/puzzle';
 import notificationManager from '../utils/notificationManager';
 import { playSound } from '../utils/soundManager';
-import { PUZZLE_TO_MODULE, getModulesToUnlock } from '../utils/unlockSystem';
 import { useModuleUnlock } from './ModuleUnlockContext';
 
 interface PuzzleContextType {
@@ -24,16 +24,15 @@ const PuzzleContext = createContext<PuzzleContextType | undefined>(undefined);
 export function PuzzleProvider({ children }: { children: React.ReactNode }) {
   const [puzzleState, setPuzzleState] = useState<PuzzleState>({});
   const [visitedModules, setVisitedModules] = useState<Set<string>>(new Set());
-  const { unlockModule, unlockedModules } = useModuleUnlock();
+  const { unlockedModules, unlockModule } = useModuleUnlock();
 
   // Initialize puzzle state from default puzzles
   useEffect(() => {
     const initialState: PuzzleState = {};
     Object.keys(DEFAULT_PUZZLES).forEach(puzzleId => {
-      const config = DEFAULT_PUZZLES[puzzleId];
       initialState[puzzleId] = {
-        isComplete: false, // All puzzles start incomplete
         progress: 0,
+        isComplete: false,
         lastUpdated: new Date(),
       };
     });
@@ -41,7 +40,7 @@ export function PuzzleProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updatePuzzleProgress = (puzzleId: string, progress: number, isComplete: boolean = false) => {
-    setPuzzleState(prev => ({
+    setPuzzleState((prev: PuzzleState) => ({
       ...prev,
       [puzzleId]: {
         ...prev[puzzleId],
@@ -53,7 +52,7 @@ export function PuzzleProvider({ children }: { children: React.ReactNode }) {
   };
 
   const completePuzzle = (puzzleId: string) => {
-    setPuzzleState(prev => {
+    setPuzzleState((prev: PuzzleState) => {
       const wasComplete = prev[puzzleId]?.isComplete || false;
       const newState = {
         ...prev,
@@ -71,7 +70,7 @@ export function PuzzleProvider({ children }: { children: React.ReactNode }) {
         
         // Send notification for puzzle completion
         const puzzleConfig = getPuzzleConfig(puzzleId);
-        const moduleName = PUZZLE_TO_MODULE[puzzleId];
+        const moduleName = getModuleNameForPuzzle(puzzleId);
         
         if (puzzleConfig && moduleName) {
           notificationManager.sendPuzzleCompletionNotification(
@@ -87,7 +86,7 @@ export function PuzzleProvider({ children }: { children: React.ReactNode }) {
         });
         
         // Check if this was the final puzzle (all 13 completed)
-        const completedCount = Object.values(newState).filter(p => p.isComplete).length;
+        const completedCount = Object.values(newState).filter((p: any) => p.isComplete).length;
         if (completedCount >= 13) {
           // Send final boss defeated notification
           notificationManager.sendFinalBossDefeatedNotification();
@@ -104,7 +103,7 @@ export function PuzzleProvider({ children }: { children: React.ReactNode }) {
 
   const getCompletedPuzzles = (): string[] => {
     return Object.entries(puzzleState)
-      .filter(([_, state]) => state.isComplete)
+      .filter(([_, state]: [string, any]) => state.isComplete)
       .map(([puzzleId, _]) => puzzleId);
   };
 

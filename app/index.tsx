@@ -1,61 +1,21 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import HomeScreen from './components/HomeScreen';
+import HomeScreen from './components/home/HomeScreen';
+import DownloadScreen from './components/login/DownloadScreen';
 import LoginScreen from './components/login/LoginScreen';
-import WelcomeGameScreen from './components/login/WelcomeGameScreen';
-import AboutScreen from './components/Modules/about/AboutScreen';
-import CoreVitalsScreen from './components/Modules/about/CoreVitalsScreen';
-import SystemModule from './components/Modules/about/System/SystemModule';
-import AccelerometerModule from './components/Modules/accelerometer/AccelerometerModule';
-import BatteryModule from './components/Modules/battery/BatteryModule';
-import CalculatorModule from './components/Modules/calculator/CalculatorModule';
-import PhoneCameraModule from './components/Modules/camera/PhoneCameraModule';
-import ClockModule from './components/Modules/clock/ClockModule';
-import CompassModule from './components/Modules/compass/CompassModule';
-import FinalBossModule from './components/Modules/finalboss/FinalBossModule';
-import FlashlightModule from './components/Modules/flashlight/FlashlightModule';
-import GamesModule from './components/Modules/games/GamesModule';
-import GyroModule from './components/Modules/gyro/GyroModule';
-import MapsModule from './components/Modules/maps/MapsModule';
-import MicrophoneModule from './components/Modules/microphone/MicrophoneModule';
-import MusicModule from './components/Modules/music/MusicModule';
-import TerminalModule from './components/Modules/terminal/TerminalModule';
-import TutorialModule from './components/Modules/tutorial/TutorialModule';
-import WeatherModule from './components/Modules/weather/WeatherModule';
-import WifiModule from './components/Modules/wifi/WifiModule';
+import SystemModule from './components/modules/about/System/SystemModule';
+import VideoPlayer from './components/ui/VideoPlayer';
 import { useAuth } from './contexts/AuthContext';
 import { InfectionProvider } from './contexts/InfectionContext';
 import { PuzzleProvider } from './contexts/PuzzleContext';
+import { MODULE_COMPONENTS } from './data/components';
 import { authApi } from './lib/auth';
-
-// Define module names type
-type ModuleName = 'terminal' | 'system' | 'clock' | 'gyro' | 'compass' | 'microphone' | 'camera' | 'accelerometer' | 'wifi' | 'tutorial' | 'music' | 'flashlight' | 'battery' | 'maps' | 'calculator' | 'weather' | 'games' | 'finalboss';
-
-// Module mapping object - much cleaner than repetitive if statements
-const MODULE_COMPONENTS = {
-  terminal: TerminalModule,
-  clock: ClockModule,
-  gyro: GyroModule,
-  compass: CompassModule,
-  microphone: MicrophoneModule,
-  camera: PhoneCameraModule,
-  accelerometer: AccelerometerModule,
-  wifi: WifiModule,
-  tutorial: TutorialModule,
-  music: MusicModule,
-  flashlight: FlashlightModule,
-  battery: BatteryModule,
-  maps: MapsModule,
-  calculator: CalculatorModule,
-  weather: WeatherModule,
-  games: GamesModule,
-  finalboss: FinalBossModule,
-} as const;
+import { LoginType } from './types/auth';
 
 function AppContent() {
   const { isAuthenticated, user, guestSignIn } = useAuth();
   const [gameState, setGameState] = useState('welcome');
-  const [loginType, setLoginType] = useState<'signup' | 'signin' | 'guest'>('signin');
+  const [loginType, setLoginType] = useState<LoginType>('signin');
   const [guestUsername, setGuestUsername] = useState<string>('');
 
   // Test API connection on startup
@@ -86,7 +46,12 @@ function AppContent() {
   }
   
   const handleDownload = () => {
-    // Go directly to home screen
+    // Show video first, then go to home screen
+    setGameState('video');
+  };
+
+  const handleVideoComplete = () => {
+    // Video finished, go to home screen
     setGameState('home');
   };
 
@@ -107,11 +72,23 @@ function AppContent() {
   if (gameState === 'welcome') {
     return (
       <View className="flex-1">
-        <WelcomeGameScreen 
+        <DownloadScreen 
           type={loginType}
           guestUsername={guestUsername}
           onDownload={handleDownload}
         />        
+      </View>
+    );
+  }
+
+  if (gameState === 'video') {
+    return (
+      <View className="flex-1">
+        <VideoPlayer
+          source={require('../assets/animations/20250728_1948_Digital Demon Emergence_simple_compose_01k19q006vfw1vh5mbjcf6y17m.mp4')}
+          onComplete={handleVideoComplete}
+          duration={5000} // 8 seconds for the video
+        />
       </View>
     );
   }
@@ -134,22 +111,6 @@ function AppContent() {
           onGoToCoreVitals={() => navigate('core-vitals')}
           onSelfDestruct={() => navigate('self-destruct')}
         />         
-      </View>
-    );
-  }
-
-  if (gameState === 'about') {
-    return (
-      <View className="flex-1">
-        <AboutScreen onGoBack={() => navigate('system')} />
-      </View>
-    );
-  }
-
-  if (gameState === 'core-vitals') {
-    return (
-      <View className="flex-1">
-        <CoreVitalsScreen onGoBack={() => navigate('system')} />
       </View>
     );
   }

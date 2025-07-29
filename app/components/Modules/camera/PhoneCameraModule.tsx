@@ -2,8 +2,9 @@ import { Camera } from 'expo-camera';
 import { useEffect, useState } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { usePuzzle } from '../../../contexts/PuzzleContext';
+import { FONTS } from '../../../data/fonts';
+import { getModuleBackgroundImage } from '../../../data/modules';
 import { playSound } from '../../../utils/soundManager';
-import { getModuleBackgroundImage } from '../../../utils/unlockSystem';
 import ScreenTemplate from '../../ui/ScreenTemplate';
 import CameraPlaceholder from './CameraPlaceholder';
 import CameraStatus from './CameraStatus';
@@ -82,10 +83,10 @@ export default function PhoneCameraModule({ onGoHome }: PhoneCameraModuleProps) 
       <View className="flex flex-col space-y-4">
         {/* Camera Status */}
         <View className="bg-gray-900 p-6 rounded-lg">
-          <Text className="text-gray-400 text-sm font-mono mb-4">CAMERA STATUS</Text>
+          <Text style={{ fontFamily: FONTS.MONO }} className="text-gray-400 text-sm mb-4">CAMERA STATUS</Text>
           <View className="flex flex-row items-center justify-center">
             <Text className="text-4xl mr-4">📷</Text>
-            <Text className={`text-xl font-mono ${hasPermission ? 'text-green-400' : 'text-red-400'}`}>
+            <Text style={{ fontFamily: FONTS.MONO }} className={`text-xl ${hasPermission ? 'text-green-400' : 'text-red-400'}`}>
               {hasPermission ? 'ACTIVE' : 'INACTIVE'}
             </Text>
           </View>
@@ -93,7 +94,7 @@ export default function PhoneCameraModule({ onGoHome }: PhoneCameraModuleProps) 
           {/* Puzzle Status */}
           {puzzleComplete && (
             <View className="mt-4 p-3 bg-green-900 rounded-lg">
-              <Text className="text-green-400 text-center font-mono text-sm">
+              <Text style={{ fontFamily: FONTS.MONO }} className="text-green-400 text-center text-sm">
                 ✅ VISUAL RECORDING COMPLETE
               </Text>
             </View>
@@ -103,8 +104,8 @@ export default function PhoneCameraModule({ onGoHome }: PhoneCameraModuleProps) 
         {/* Puzzle Instructions */}
         {!puzzleComplete && (
           <View className="bg-gray-900 p-6 rounded-lg">
-            <Text className="text-gray-400 text-sm font-mono mb-2">PUZZLE INSTRUCTIONS</Text>
-            <Text className="text-purple-400 text-sm font-mono mb-2">
+            <Text style={{ fontFamily: FONTS.MONO }} className="text-gray-400 text-sm mb-2">PUZZLE INSTRUCTIONS</Text>
+            <Text style={{ fontFamily: FONTS.MONO }} className="text-purple-400 text-sm mb-2">
               Test camera functionality by taking a photo
             </Text>
           </View>
@@ -120,7 +121,7 @@ export default function PhoneCameraModule({ onGoHome }: PhoneCameraModuleProps) 
             <CameraStatus status="error" error={error || undefined} />
           ) : (
             <View className="space-y-4">
-              <Text className="text-green-400 text-center text-lg mb-4">📷 Camera Module: ACTIVE</Text>
+              <Text style={{ fontFamily: FONTS.MONO }} className="text-green-400 text-center text-lg mb-4">📷 Camera Module: ACTIVE</Text>
               
               {/* Camera Component */}
               <View className="mb-6">
@@ -130,14 +131,14 @@ export default function PhoneCameraModule({ onGoHome }: PhoneCameraModuleProps) 
               {/* Photo Status */}
               {photoTaken && (
                 <View className="p-3 bg-green-900 rounded-lg">
-                  <Text className="text-green-400 text-center font-mono text-sm">
+                  <Text style={{ fontFamily: FONTS.MONO }} className="text-green-400 text-center text-sm">
                     ✅ Photo captured successfully!
                   </Text>
                   <TouchableOpacity
                     onPress={handleRetakePhoto}
                     className="mt-2 p-2 bg-gray-700 rounded-lg"
                   >
-                    <Text className="text-center text-gray-300 font-mono text-sm">
+                    <Text style={{ fontFamily: FONTS.MONO }} className="text-center text-gray-300 text-sm">
                       RETAKE PHOTO
                     </Text>
                   </TouchableOpacity>
@@ -145,9 +146,9 @@ export default function PhoneCameraModule({ onGoHome }: PhoneCameraModuleProps) 
               )}
               
               <View className="space-y-3">
-                <Text className="text-green-400 text-center text-sm">Camera: READY</Text>
-                <Text className="text-purple-400 text-center text-xs">Live feed from device camera</Text>
-                <Text className="text-gray-500 text-center text-xs">Tap to capture photos</Text>
+                <Text style={{ fontFamily: FONTS.MONO }} className="text-green-400 text-center text-sm">Camera: READY</Text>
+                <Text style={{ fontFamily: FONTS.MONO }} className="text-purple-400 text-center text-xs">Live feed from device camera</Text>
+                <Text style={{ fontFamily: FONTS.MONO }} className="text-gray-500 text-center text-xs">Tap to capture photos</Text>
               </View>
             </View>
           )}

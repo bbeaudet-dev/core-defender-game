@@ -1,25 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-
-export type ModuleName = 
-  | 'terminal' 
-  | 'system' 
-  | 'clock' 
-  | 'gyro' 
-  | 'compass' 
-  | 'microphone' 
-  | 'camera' 
-  | 'accelerometer'
-  | 'wifi'
-  | 'tutorial'
-  | 'music'
-  | 'flashlight'
-  | 'battery'
-  | 'maps'
-  | 'calculator'
-  | 'weather'
-  | 'games'
-  | 'finalboss'
+import { ALL_MODULES, ModuleName } from '../data/modules';
 
 export interface ModuleUnlock {
   name: ModuleName;
@@ -42,152 +23,15 @@ interface ModuleUnlockContextType {
 
 const ModuleUnlockContext = createContext<ModuleUnlockContextType | undefined>(undefined);
 
-const DEFAULT_MODULES: ModuleUnlock[] = [
-  {
-    name: 'tutorial',
-    displayName: 'TUTORIAL',
-    icon: '❓',
-    color: 'bg-red-600',
-    unlocked: true, // Always unlocked
-    order: 1
-  },
-  {
-    name: 'terminal',
-    displayName: 'TERMINAL',
-    icon: '💻',
-    color: 'bg-red-500',
-    unlocked: true, // Always unlocked
-    order: 2
-  },
-  {
-    name: 'system',
-    displayName: 'SYSTEM',
-    icon: '⚙️',
-    color: 'bg-red-500',
-    unlocked: true, // Always unlocked
-    order: 3
-  },
-  {
-    name: 'clock',
-    displayName: 'CLOCK',
-    icon: '🕐',
-    color: 'bg-yellow-500',
-    unlocked: false,
-    order: 4
-  },
-  {
-    name: 'gyro',
-    displayName: 'GYRO',
-    icon: '⚡',
-    color: 'bg-red-500',
-    unlocked: false,
-    order: 5
-  },
-  {
-    name: 'compass',
-    displayName: 'COMPASS',
-    icon: '🧭',
-    color: 'bg-red-500',
-    unlocked: false,
-    order: 6
-  },
-  {
-    name: 'microphone',
-    displayName: 'MICROPHONE',
-    icon: '🎵',
-    color: 'bg-red-500',
-    unlocked: false,
-    order: 7
-  },
-  {
-    name: 'camera',
-    displayName: 'PHONE CAMERA',
-    icon: '📷',
-    color: 'bg-red-500',
-    unlocked: false,
-    order: 8
-  },
-  {
-    name: 'accelerometer',
-    displayName: 'ACCELEROMETER',
-    icon: '📊',
-    color: 'bg-purple-500',
-    unlocked: false,
-    order: 9
-  },
-  {
-    name: 'wifi',
-    displayName: 'WIFI',
-    icon: '📡',
-    color: 'bg-blue-500',
-    unlocked: false,
-    order: 10
-  },
-  {
-    name: 'music',
-    displayName: 'MUSIC',
-    icon: '🎶',
-    color: 'bg-green-500',
-    unlocked: false,
-    order: 11
-  },
-  {
-    name: 'flashlight',
-    displayName: 'FLASHLIGHT',
-    icon: '💡',
-    color: 'bg-yellow-500',
-    unlocked: false,
-    order: 12
-  },
-  {
-    name: 'battery',
-    displayName: 'BATTERY',
-    icon: '🔋',
-    color: 'bg-purple-500',
-    unlocked: false,
-    order: 13
-  },
-  {
-    name: 'maps',
-    displayName: 'MAPS',
-    icon: '🗺️',
-    color: 'bg-blue-500',
-    unlocked: false,
-    order: 14
-  },
-  {
-    name: 'calculator',
-    displayName: 'CALCULATOR',
-    icon: '📐',
-    color: 'bg-green-500',
-    unlocked: false,
-    order: 15
-  },
-  {
-    name: 'weather',
-    displayName: 'WEATHER',
-    icon: '🌤️',
-    color: 'bg-yellow-500',
-    unlocked: false,
-    order: 16
-  },
-  {
-    name: 'games',
-    displayName: 'GAMES',
-    icon: '🎮',
-    color: 'bg-red-500',
-    unlocked: false,
-    order: 17
-  },
-  {
-    name: 'finalboss',
-    displayName: 'FINAL BOSS',
-    icon: '👑',
-    color: 'bg-purple-500',
-    unlocked: false,
-    order: 18
-  }
-];
+// Convert ALL_MODULES to ModuleUnlock format
+const DEFAULT_MODULES: ModuleUnlock[] = ALL_MODULES.map((module, index) => ({
+  name: module.name as ModuleName,
+  displayName: module.displayName,
+  icon: module.icon,
+  color: module.color,
+  unlocked: module.isStartingApp, // Starting apps are always unlocked
+  order: index + 1
+}));
 
 export function ModuleUnlockProvider({ children }: { children: React.ReactNode }) {
   const [modules, setModules] = useState<ModuleUnlock[]>(DEFAULT_MODULES);
